@@ -1,23 +1,24 @@
 /* Tron HD Keyring
  * 
- * A wrapper for github.com/cobowallet/tron-wallet, a HD Wallet for Tron.
- * 
  * Similar to github.com/MetaMask/eth-hd-keyring, this pacakge provides a
  * Keyring Class Protocol, to be used in KeyringController, like is being
  * used in MetaMask.
+ * 
+ * Thanks to tronprotocol/tron-web and TronWatch/TronLink
  */ 
 
 const log = require('loglevel')
 const EventEmitter = require('events').EventEmitter
-const hdkey = require('ethereumjs-wallet/hdkey')
+const bip32 = require('bip32')
 const bip39 = require('bip39')
-const ethUtil = require('ethereumjs-util')
-const sigUtil = require('eth-sig-util')
-const TronWallet = require('tron-hd-wallet')
+const TronWeb = require('tronweb')
 
+const fullNode = 'https://api.trongrid.io';
+const solidityNode = 'https://api.trongrid.io';
+const eventServer = 'https://api.trongrid.io/';
+const BIP44_INDEX = '195'
 
 // Options:
-const hdPathString = `m/44'/195'/0'/0`
 const type = 'HD Key Tree'
 
 log.setDefaultLevel(process.env.METAMASK_DEBUG ? 'debug' : 'warn')
@@ -37,7 +38,6 @@ class HdKeyring extends EventEmitter {
     return Promise.resolve({
       mnemonic: this.mnemonic,
       numberOfAccounts: this.wallets.length,
-      hdPath: this.hdPath,
     })
   }
 
@@ -47,7 +47,6 @@ class HdKeyring extends EventEmitter {
     this.wallets = []
     this.mnemonic = null
     this.root = null
-    this.hdPath = opts.hdPath || hdPathString
     this.testNet = opts.testNet || false
 
     if (opts.mnemonic) {
@@ -70,15 +69,15 @@ class HdKeyring extends EventEmitter {
     const oldLen = this.wallets.length
     const newWallets = []
     for (let i = oldLen; i < numberOfAccounts + oldLen; i++) {
-      const child = this.root.deriveChild(i)
-      // TODO:(need remove HD info and keep only private/public key?)
-      // const wallet = child.getWallet()
-      const wallet = child
+      // TODO: not really HD implmentation, but good enough currently.
+      const child = this.root.derivePath(`m/44'/${ BIP44_INDEX }'/${ i }'/0/0`, this.seed);
+      const privateKey = child.privateKey.toString('hex');
+      const wallet = new TronWeb(fullNode, solidityNode, eventServer, privateKey)
       newWallets.push(wallet)
       this.wallets.push(wallet)
     }
     const hexWallets = newWallets.map((w) => {
-      return w.getAddress
+      return w.defaultAddress.base58
     })
     return Promise.resolve(hexWallets)
   }
@@ -86,7 +85,8 @@ class HdKeyring extends EventEmitter {
   getAccounts () {
     log.debug('tronhd getaccounts')
     return Promise.resolve(this.wallets.map((w) => {
-      return w.getAddress()
+      // return TronWeb.address.fromPrivateKey(w.defaultPrivateKey)
+      return w.defaultAddress.base58
     }))
   }
 
@@ -127,9 +127,12 @@ class HdKeyring extends EventEmitter {
 
   _initFromMnemonic (mnemonic) {
     log.debug('tronhd _initFromMnemonic')
+    if (!bip39.validateMnemonic(mnemonic)) {
+      throw new Error(`Invalid Mnemonic provided: ${mnemonic}`);
+    }
     this.mnemonic = mnemonic
-    this.hdWallet = TronWallet.fromMnemonic(mnemonic, this.testNet)
-    this.root = this.hdWallet.derivePath(this.hdPath)
+    this.seed = bip39.mnemonicToSeedHex(mnemonic);
+    this.root = bip32.fromSeed(new Buffer(this.seed, 'hex'))
   }
 }
 

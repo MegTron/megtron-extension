@@ -3,7 +3,7 @@ const HdKeyring = require('../../../app/scripts/lib/tron-hd-keyring')
 
 const sampleMnemonic = 'decline rice regret twice apple unknown melt puzzle spot echo banana tornado mountain text output arrive tomorrow flat oppose scrub bless impact hockey recycle'
 const firstAcct = 'TDKcAPfAu42Js6dqirkUcfos9S9pPzoCbh'
-const secondAcct = 'TLfkedhYqWXU7zr6H1oEP3XsrjueSCbmmP'
+const secondAcct = 'TJXW2Apt9UboV1VCyWoutjQBNtTGaJSmrh'
 
 describe('TronHDKeyring', function () {
 
