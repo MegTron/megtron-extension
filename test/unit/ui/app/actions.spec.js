@@ -10,7 +10,7 @@ const configureStore = require('redux-mock-store').default
 const thunk = require('redux-thunk').default
 const EthQuery = require('eth-query')
 const Eth = require('ethjs')
-const KeyringController = require('eth-keyring-controller')
+const KeyringController = require('tron-keyring-controller')
 
 const { createTestProviderTools } = require('../../../stub/provider')
 const provider = createTestProviderTools({ scaffold: {}}).provider
@@ -677,12 +677,13 @@ describe('Actions', () => {
     })
   })
 
+  /* TODO(MegTron)
   describe('#signMsg', () => {
 
     let signMessageSpy, metamaskMsgs, msgId, messages
 
     const msgParams = {
-      from: '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc',
+      from: 'TSwZDyupYNUgYB1DJy2wQa6kgw44B7eGnA',
       data: '0x879a053d4800c6354e76c7985a865d2922c82fb5b3f4577b2fe08b998954f2e0',
     }
 
@@ -737,7 +738,7 @@ describe('Actions', () => {
     let signPersonalMessageSpy, metamaskMsgs, msgId, personalMessages
 
     const msgParams = {
-      from: '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc',
+      from: 'TSwZDyupYNUgYB1DJy2wQa6kgw44B7eGnA',
       data: '0x879a053d4800c6354e76c7985a865d2922c82fb5b3f4577b2fe08b998954f2e0',
     }
 
@@ -786,6 +787,7 @@ describe('Actions', () => {
     })
 
   })
+  */
 
   describe('#signTx', () => {
 
@@ -894,7 +896,7 @@ describe('Actions', () => {
     it('calls setSelectedAddress in background', () => {
       const store = mockStore({ metamask: devState })
 
-      store.dispatch(actions.setSelectedAddress('0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc'))
+      store.dispatch(actions.setSelectedAddress('TSwZDyupYNUgYB1DJy2wQa6kgw44B7eGnA'))
       assert(setSelectedAddressSpy.calledOnce)
     })
 
@@ -1173,13 +1175,13 @@ describe('Actions', () => {
       const expectedActions = [
         { type: 'SHOW_LOADING_INDICATION', value: undefined },
         { type: 'HIDE_LOADING_INDICATION' },
-        { type: 'SHOW_PRIVATE_KEY', value: '7ec73b91bb20f209a7ff2d32f542c3420b4fccf14abcc7840d2eff0ebcb18505' },
+        { type: 'SHOW_PRIVATE_KEY', value: '5b501e9be9ebe8742f73e95a1bb0878f47f95378fbc2c59fd43a83fbc72a72ee' },
       ]
 
       submitPasswordSpy = sinon.spy(background, 'submitPassword')
       exportAccountSpy = sinon.spy(background, 'exportAccount')
 
-      return store.dispatch(actions.exportAccount(password, '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc'))
+      return store.dispatch(actions.exportAccount(password, 'TSwZDyupYNUgYB1DJy2wQa6kgw44B7eGnA'))
         .then((result) => {
           assert(submitPasswordSpy.calledOnce)
           assert(exportAccountSpy.calledOnce)
@@ -1200,7 +1202,7 @@ describe('Actions', () => {
         callback(new Error('error'))
       })
 
-      return store.dispatch(actions.exportAccount(password, '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc'))
+      return store.dispatch(actions.exportAccount(password, 'TSwZDyupYNUgYB1DJy2wQa6kgw44B7eGnA'))
         .catch(() => {
           assert.deepEqual(store.getActions(), expectedActions)
         })
@@ -1219,7 +1221,7 @@ describe('Actions', () => {
         callback(new Error('error'))
       })
 
-      return store.dispatch(actions.exportAccount(password, '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc'))
+      return store.dispatch(actions.exportAccount(password, 'TSwZDyupYNUgYB1DJy2wQa6kgw44B7eGnA'))
         .catch(() => {
           assert.deepEqual(store.getActions(), expectedActions)
         })
@@ -1235,7 +1237,7 @@ describe('Actions', () => {
 
     it('', () => {
       const store = mockStore()
-      store.dispatch(actions.setAccountLabel('0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc', 'test'))
+      store.dispatch(actions.setAccountLabel('TSwZDyupYNUgYB1DJy2wQa6kgw44B7eGnA', 'test'))
       assert(setAccountLabelSpy.calledOnce)
     })
   })
