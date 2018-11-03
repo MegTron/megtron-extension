@@ -48,11 +48,11 @@
     "message": "Amount + Gas"
   },
   "appDescription": {
-    "message": "Ethereum Browser Extension",
+    "message": "Tron Browser Extension",
     "description": "The description of the application"
   },
   "appName": {
-    "message": "MetaMask",
+    "message": "MegTron",
     "description": "The name of the application"
   },
   "approve": {
@@ -503,7 +503,7 @@
     "message": "How would you like to deposit Ether?"
   },
   "holdEther": {
-    "message": "It allows you to hold ether & tokens, and serves as your bridge to decentralized applications."
+    "message": "It allows you to hold TRX & tokens, and serves as your bridge to decentralized applications."
   },
   "import": {
     "message": "Import",
@@ -633,7 +633,7 @@
     "message": "Message"
   },
   "metamaskDescription": {
-    "message": "MetaMask is a secure identity vault for Ethereum."
+    "message": "MegTron is a secure identity vault for Tron."
   },
   "metamaskSeedWords": {
     "message": "MetaMask Seed Words"
@@ -1289,7 +1289,7 @@
     "message": "Welcome Back!"
   },
   "welcomeBeta": {
-    "message": "Welcome to MetaMask Beta"
+    "message": "Welcome to MegTron Beta"
   },
   "whatsThis": {
     "message": "What's this?"

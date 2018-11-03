@@ -33,11 +33,11 @@
     "message": "数量 + Gas"
   },
   "appDescription": {
-    "message": "以太坊浏览器插件",
+    "message": "波场浏览器插件",
     "description": "The description of the application"
   },
   "appName": {
-    "message": "MetaMask",
+    "message": "MegTron",
     "description": "The name of the application"
   },
   "approved": {
@@ -377,7 +377,7 @@
     "message": "你想怎样转入 Ether？"
   },
   "holdEther": {
-    "message": "它允许你保存ether和代币，并作为你使用Dapp的桥梁."
+    "message": "它允许你保存TRX和代币，并作为你使用Dapp的桥梁."
   },
   "import": {
     "message": "导入",
@@ -489,7 +489,7 @@
     "message": "消息"
   },
   "metamaskDescription": {
-    "message": "MetaMask is a secure identity vault for Ethereum."
+    "message": "MegTron is a secure identity vault for Tron."
   },
   "metamaskSeedWords": {
     "message": "MetaMask 助记词"
@@ -934,7 +934,7 @@
     "message": "警告"
   },
   "welcomeBeta": {
-    "message": "欢迎使用 MetaMask 测试版"
+    "message": "欢迎使用 MegTron 测试版"
   },
   "whatsThis": {
     "message": "这是什么？"
