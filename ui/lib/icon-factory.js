@@ -2,6 +2,7 @@ var iconFactory
 const isValidAddress = require('ethereumjs-util').isValidAddress
 const { checksumAddress } = require('../app/util')
 const contractMap = require('eth-contract-metadata')
+const { base58ToHexString } = require('tron-keyring-controller')
 
 module.exports = function (jazzicon) {
   if (!iconFactory) {
@@ -58,7 +59,9 @@ function imageElFor (address) {
 }
 
 function jsNumberForAddress (address) {
-  var addr = address.slice(2, 10)
+  const hexAddress = base58ToHexString(address)
+  // Remove first byte, which is always 0x41 for Tron
+  var addr = hexAddress.slice(2, 10)
   var seed = parseInt(addr, 16)
   return seed
 }
