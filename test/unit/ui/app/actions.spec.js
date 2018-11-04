@@ -468,7 +468,7 @@ describe('Actions', () => {
 
       removeAccountSpy = sinon.spy(background, 'removeAccount')
 
-      return store.dispatch(actions.removeAccount('0xe18035bf8712672935fdb4e5e431b1a0183d2dfc'))
+      return store.dispatch(actions.removeAccount('TWXYdQRKxSzbJ9DEyTH6bWUW4GB3ZXU6Gb'))
         .then(() => {
           assert(removeAccountSpy.calledOnce)
           assert.deepEqual(store.getActions(), expectedActions)
@@ -487,7 +487,7 @@ describe('Actions', () => {
         callback(new Error('error'))
       })
 
-      return store.dispatch(actions.removeAccount('0xe18035bf8712672935fdb4e5e431b1a0183d2dfc'))
+      return store.dispatch(actions.removeAccount('TWXYdQRKxSzbJ9DEyTH6bWUW4GB3ZXU6Gb'))
         .catch(() => {
           assert.deepEqual(store.getActions(), expectedActions)
         })
