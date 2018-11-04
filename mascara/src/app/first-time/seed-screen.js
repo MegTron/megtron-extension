@@ -69,7 +69,7 @@ class BackupPhraseScreen extends Component {
   exportSeedWords = () => {
     const { seedWords } = this.props
 
-    exportAsFile('MetaMask Secret Backup Phrase', seedWords, 'text/plain')
+    exportAsFile('MegTron Secret Backup Phrase', seedWords, 'text/plain')
   }
 
   renderSecretWordsContainer () {
