@@ -21,7 +21,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    showDepositModal: () => dispatch(showModal({ name: 'DEPOSIT_ETHER' })),
+    showDepositModal: () => dispatch(showModal({ name: 'ACCOUNT_DETAILS' })),
   }
 }
 
