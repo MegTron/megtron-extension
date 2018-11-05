@@ -302,7 +302,7 @@ function getTokenAddressFromTokenObject (token) {
  * @returns {String} - checksummed address
  */
 function checksumAddress (address) {
-  return address ? ethUtil.toChecksumAddress(address) : ''
+  return address || ''
 }
 
 function addressSlicer (address = '') {
