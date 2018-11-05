@@ -18,7 +18,6 @@ class ConfirmSeedScreen extends Component {
     seedWords: PropTypes.string,
     confirmSeedWords: PropTypes.func,
     history: PropTypes.object,
-    openBuyEtherModal: PropTypes.func,
   };
 
   static defaultProps = {
@@ -43,12 +42,11 @@ class ConfirmSeedScreen extends Component {
   }
 
   handleClick () {
-    const { confirmSeedWords, history, openBuyEtherModal } = this.props
+    const { confirmSeedWords, history} = this.props
 
     confirmSeedWords()
       .then(() => {
         history.push(DEFAULT_ROUTE)
-        openBuyEtherModal()
       })
   }
 
@@ -156,7 +154,6 @@ export default compose(
     }),
     dispatch => ({
       confirmSeedWords: () => dispatch(confirmSeedWords()),
-      openBuyEtherModal: () => dispatch(showModal({ name: 'DEPOSIT_ETHER'})),
     })
   )
 )(ConfirmSeedScreen)
