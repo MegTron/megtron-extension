@@ -204,7 +204,7 @@
   }
 
   .backup-phrase__tips {
-    margin: 40px 0 !important;
+    margin: 60px 0 20px !important;
     width: initial !important;
   }
 
@@ -477,13 +477,13 @@ button.backup-phrase__reveal-button:hover {
 .backup-phrase__confirm-seed-option {
   color: #5B5D67;
   font-family: Roboto;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 21px;
   background-color: #E7E7E7;
-  padding: 8px 19px;
+  padding: 6px 10px;
   box-shadow: none;
   min-width: 65px;
-  margin: 7px;
+  margin: 4px;
 }
 
 .backup-phrase__confirm-seed-option--selected {
