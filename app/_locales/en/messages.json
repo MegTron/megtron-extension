@@ -956,7 +956,7 @@
     "message": "Enter your secret twelve word phrase here to restore your vault."
   },
   "seedPhraseReq": {
-    "message": "Seed phrases are 12 words long"
+    "message": "Seed phrases are 24 words long"
   },
   "select": {
     "message": "Select"
@@ -1201,7 +1201,7 @@
     "message": "Try again"
   },
   "twelveWords": {
-    "message": "These 12 words are the only way to restore your MegTron accounts.\nSave them somewhere safe and secret."
+    "message": "These 24 words are the only way to restore your MegTron accounts.\nSave them somewhere safe and secret."
   },
   "typePassword": {
     "message": "Type your MegTron password"

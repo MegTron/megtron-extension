@@ -729,13 +729,13 @@
     "message": "搜索结果"
   },
   "secretPhrase": {
-    "message": "输入12位助记词以恢复金库."
+    "message": "输入24位助记词以恢复金库."
   },
   "newPassword8Chars": {
     "message": "新密码（至少8位)"
   },
   "seedPhraseReq": {
-    "message": "助记词为12个单词"
+    "message": "助记词为24个单词"
   },
   "select": {
     "message": "选择"
@@ -884,7 +884,7 @@
     "description": "Followed by a link (here) to view token balances"
   },
   "twelveWords": {
-    "message": "这12个单词是恢复MegTron帐户的唯一方法。.\n将它们存放在安全和秘密的地方。."
+    "message": "这24个单词是恢复MegTron帐户的唯一方法。.\n将它们存放在安全和秘密的地方。."
   },
   "typePassword": {
     "message": "输入你的密码"
