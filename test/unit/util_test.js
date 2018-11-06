@@ -45,15 +45,15 @@ describe('util', function () {
 
   describe('#addressSummary', function () {
     it('should add case-sensitive checksum', function () {
-      var address = '0xfdea65c8e26263f6d9a1b5de9555d2931a33b825'
+      var address = 'TSwZDyupYNUgYB1DJy2wQa6kgw44B7eGnA'
       var result = util.addressSummary(address)
-      assert.equal(result, '0xFDEa65C8...b825')
+      assert.equal(result, 'TSwZDyupYN...eGnA')
     })
 
     it('should accept arguments for firstseg, lastseg, and keepPrefix', function () {
-      var address = '0xfdea65c8e26263f6d9a1b5de9555d2931a33b825'
+      var address = 'TSwZDyupYNUgYB1DJy2wQa6kgw44B7eGnA'
       var result = util.addressSummary(address, 4, 4, false)
-      assert.equal(result, 'FDEa...b825')
+      assert.equal(result, 'TSwZ...eGnA')
     })
   })
 
