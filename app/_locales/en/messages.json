@@ -956,7 +956,7 @@
     "message": "Search Results"
   },
   "secretPhrase": {
-    "message": "Enter your secret twelve word phrase here to restore your vault."
+    "message": "Enter your secret twenty-four word phrase here to restore your vault."
   },
   "seedPhraseReq": {
     "message": "Seed phrases are 24 words long"
