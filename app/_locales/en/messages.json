@@ -185,6 +185,9 @@
   "connectingToRinkeby": {
     "message": "Connecting to Rinkeby Test Network"
   },
+  "connectingToShasta": {
+    "message": "Connecting to Shasta Test Network"
+  },
   "connectingToUnknown": {
     "message": "Connecting to Unknown Network"
   },
@@ -1017,6 +1020,9 @@
   },
   "shapeshiftBuy": {
     "message": "Buy with Shapeshift"
+  },
+  "shasta": {
+    "message": "Shasta Test Network"
   },
   "showPrivateKeys": {
     "message": "Show Private Keys"

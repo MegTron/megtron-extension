@@ -2,31 +2,28 @@ const assert = require('assert')
 const EventEmitter = require('events')
 const ObservableStore = require('obs-store')
 const ComposedStore = require('obs-store/lib/composed')
-const EthQuery = require('eth-query')
 const JsonRpcEngine = require('json-rpc-engine')
 const providerFromEngine = require('eth-json-rpc-middleware/providerFromEngine')
 const log = require('loglevel')
 const createMetamaskMiddleware = require('./createMetamaskMiddleware')
-const createInfuraClient = require('./createInfuraClient')
 const createJsonRpcClient = require('./createJsonRpcClient')
 const createLocalhostClient = require('./createLocalhostClient')
+const createTrongridClient = require('./createTrongridClient')
 const { createSwappableProxy, createEventEmitterProxy } = require('swappable-obj-proxy')
 
 const {
-  ROPSTEN,
-  RINKEBY,
-  KOVAN,
   MAINNET,
+  SHASTA,
   LOCALHOST,
 } = require('./enums')
-const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET]
+const TRONGRID_PROVIDER_TYPES = [MAINNET, SHASTA]
 
 const env = process.env.METAMASK_ENV
 const METAMASK_DEBUG = process.env.METAMASK_DEBUG
 const testMode = (METAMASK_DEBUG || env === 'test')
 
 const defaultProviderConfig = {
-  type: testMode ? RINKEBY : MAINNET,
+  type: testMode ? SHASTA : MAINNET,
 }
 
 module.exports = class NetworkController extends EventEmitter {
@@ -85,12 +82,7 @@ module.exports = class NetworkController extends EventEmitter {
     if (!this._provider) {
       return log.warn('NetworkController - lookupNetwork aborted due to missing provider')
     }
-    const ethQuery = new EthQuery(this._provider)
-    ethQuery.sendAsync({ method: 'net_version' }, (err, network) => {
-      if (err) return this.setNetworkState('loading')
-      log.info('web3.getNetwork returned ' + network)
-      this.setNetworkState(network)
-    })
+    this.setNetworkState('5')
   }
 
   setRpcTarget (rpcTarget) {
@@ -103,7 +95,7 @@ module.exports = class NetworkController extends EventEmitter {
 
   async setProviderType (type) {
     assert.notEqual(type, 'rpc', `NetworkController - cannot call "setProviderType" with type 'rpc'. use "setRpcTarget"`)
-    assert(INFURA_PROVIDER_TYPES.includes(type) || type === LOCALHOST, `NetworkController - Unknown rpc type "${type}"`)
+    assert(TRONGRID_PROVIDER_TYPES.includes(type) || type === LOCALHOST, `NetworkController - Unknown rpc type "${type}"`)
     const providerConfig = { type }
     this.providerConfig = providerConfig
   }
@@ -133,10 +125,10 @@ module.exports = class NetworkController extends EventEmitter {
 
   _configureProvider (opts) {
     const { type, rpcTarget } = opts
-    // infura type-based endpoints
-    const isInfura = INFURA_PROVIDER_TYPES.includes(type)
-    if (isInfura) {
-      this._configureInfuraProvider(opts)
+    // trongrid type-based endpoints
+    const isTrongrid = TRONGRID_PROVIDER_TYPES.includes(type)
+    if (isTrongrid) {
+      this._configureTrongridProvider(opts)
     // other type-based rpc endpoints
     } else if (type === LOCALHOST) {
       this._configureLocalhostProvider()
@@ -148,9 +140,9 @@ module.exports = class NetworkController extends EventEmitter {
     }
   }
 
-  _configureInfuraProvider ({ type }) {
-    log.info('NetworkController - configureInfuraProvider', type)
-    const networkClient = createInfuraClient({ network: type })
+  _configureTrongridProvider ({ type }) {
+    log.info('NetworkController - configureTrongridProvider', type)
+    const networkClient = createTrongridClient({ network: type })
     this._setNetworkClient(networkClient)
   }
 

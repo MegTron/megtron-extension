@@ -12,15 +12,7 @@
       background-color: lighten($blue-lagoon, 68%);
     }
 
-    &--ropsten {
-      background-color: lighten($crimson, 45%);
-    }
-
-    &--kovan {
-      background-color: lighten($purple, 65%);
-    }
-
-    &--rinkeby {
+    &--shasta {
       background-color: lighten($tulip-tree, 35%);
     }
   }
@@ -39,15 +31,7 @@
       background-color: $blue-lagoon;
     }
 
-    &--ropsten {
-      background-color: $crimson;
-    }
-
-    &--kovan {
-      background-color: $purple;
-    }
-
-    &--rinkeby {
+    &--shasta {
       background-color: $tulip-tree;
     }
   }

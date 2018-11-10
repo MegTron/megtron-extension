@@ -701,9 +701,9 @@
     "currentCurrency": "usd",
     "conversionRate": 418.62,
     "conversionDate": 1512615622,
-    "infuraNetworkStatus": {
+    "trongridNetworkStatus": {
       "mainnet": "ok",
-      "ropsten": "ok",
+      "shasta": "ok",
       "kovan": "ok",
       "rinkeby": "ok"
     },

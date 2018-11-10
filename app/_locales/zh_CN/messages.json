@@ -696,6 +696,9 @@
   "connectingToRinkeby": {
     "message": "正在连接到Rinkeby测试网络"
   },
+  "connectingToShasta": {
+    "message": "正在连接到Shasta测试网络"
+  },
   "connectingToUnknown": {
     "message": "正在连接到未知网络"
   },
@@ -775,6 +778,9 @@
   },
   "shapeshiftBuy": {
     "message": "使用 Shapeshift 购买"
+  },
+  "shasta": {
+    "message": "Shasta 测试网络"
   },
   "showPrivateKeys": {
     "message": "显示私钥"

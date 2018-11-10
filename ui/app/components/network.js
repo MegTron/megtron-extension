@@ -51,18 +51,9 @@ Network.prototype.render = function () {
   } else if (providerName === 'mainnet') {
     hoverText = context.t('mainnet')
     iconName = 'ethereum-network'
-  } else if (providerName === 'ropsten') {
-    hoverText = context.t('ropsten')
-    iconName = 'ropsten-test-network'
-  } else if (parseInt(networkNumber) === 3) {
-    hoverText = context.t('ropsten')
-    iconName = 'ropsten-test-network'
-  } else if (providerName === 'kovan') {
-    hoverText = context.t('kovan')
-    iconName = 'kovan-test-network'
-  } else if (providerName === 'rinkeby') {
-    hoverText = context.t('rinkeby')
-    iconName = 'rinkeby-test-network'
+  } else if (providerName === 'shasta') {
+    hoverText = context.t('shasta')
+    iconName = 'shasta-test-network'
   } else {
     hoverText = context.t('unknownNetwork')
     iconName = 'unknown-private-network'
@@ -73,9 +64,7 @@ Network.prototype.render = function () {
       className: classnames({
         'network-component--disabled': this.props.disabled,
         'ethereum-network': providerName === 'mainnet',
-        'ropsten-test-network': providerName === 'ropsten' || parseInt(networkNumber) === 3,
-        'kovan-test-network': providerName === 'kovan',
-        'rinkeby-test-network': providerName === 'rinkeby',
+        'rinkeby-test-network': providerName === 'shasta',
       }),
       title: hoverText,
       onClick: (event) => {
@@ -95,31 +84,13 @@ Network.prototype.render = function () {
               h('.network-name', context.t('mainnet')),
               h('i.fa.fa-chevron-down.fa-lg.network-caret'),
             ])
-          case 'ropsten-test-network':
-            return h('.network-indicator', [
-              h(NetworkDropdownIcon, {
-                backgroundColor: '#e91550', // $crimson
-                nonSelectBackgroundColor: '#ec2c50',
-              }),
-              h('.network-name', context.t('ropsten')),
-              h('i.fa.fa-chevron-down.fa-lg.network-caret'),
-            ])
-          case 'kovan-test-network':
-            return h('.network-indicator', [
-              h(NetworkDropdownIcon, {
-                backgroundColor: '#690496', // $purple
-                nonSelectBackgroundColor: '#b039f3',
-              }),
-              h('.network-name', context.t('kovan')),
-              h('i.fa.fa-chevron-down.fa-lg.network-caret'),
-            ])
-          case 'rinkeby-test-network':
+          case 'shasta-test-network':
             return h('.network-indicator', [
               h(NetworkDropdownIcon, {
                 backgroundColor: '#ebb33f', // $tulip-tree
                 nonSelectBackgroundColor: '#ecb23e',
               }),
-              h('.network-name', context.t('rinkeby')),
+              h('.network-name', context.t('shasta')),
               h('i.fa.fa-chevron-down.fa-lg.network-caret'),
             ])
           default:
