@@ -94,12 +94,17 @@ async function performFetch (network, req, res) {
   const data = JSON.parse(rawData)
 
   // finally return result
-  res.result = data.result
-  res.error = data.error
+  res.result = data
+  res.error = data.Error
 }
 
 function fetchConfigFromReq ({ network, req }) {
   const { method, params } = req
+  let body = JSON.stringify(params)
+  // A hack to make it work. Ideally, params should be object instead of array
+  if (body.startsWith('[') && body.endsWith(']')) {
+    body = body.slice(1, -1)
+  }
 
   const fetchParams = {}
   let fetchUrl = network === 'mainnet' ? `https://api.trongrid.io` : `https://api.${network}.trongrid.io`
@@ -110,11 +115,11 @@ function fetchConfigFromReq ({ network, req }) {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     }
-    fetchParams.body = JSON.stringify(params)
+    fetchParams.body = body
     fetchUrl += `/${method}`
   } else {
     fetchParams.method = 'GET'
-    const paramsString = encodeURIComponent(JSON.stringify(params))
+    const paramsString = body
     fetchUrl += `/${method}?params=${paramsString}`
   }
 
