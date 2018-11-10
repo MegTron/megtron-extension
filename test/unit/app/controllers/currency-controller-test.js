@@ -15,11 +15,9 @@ describe('currency-controller', function () {
         assert.equal(currencyController.getCurrentCurrency(), 'usd')
       })
 
-      it('should be able to set to other currency', function () {
+      it('should not be able to set to other currency', function () {
         assert.equal(currencyController.getCurrentCurrency(), 'usd')
-        currencyController.setCurrentCurrency('JPY')
-        var result = currencyController.getCurrentCurrency()
-        assert.equal(result, 'JPY')
+        assert.throws(function () { currencyController.setCurrentCurrency('JPY') }, Error, 'Only usd is supported')
       })
     })
 
@@ -31,11 +29,11 @@ describe('currency-controller', function () {
     })
 
     describe('#updateConversionRate', function () {
-      it('should retrieve an update for ETH to USD and set it in memory', function (done) {
+      it('should retrieve an update for TRX to USD and set it in memory', function (done) {
         this.timeout(15000)
-        nock('https://api.infura.io')
-          .get('/v1/ticker/ethusd')
-          .reply(200, '{"base": "ETH", "quote": "USD", "bid": 288.45, "ask": 288.46, "volume": 112888.17569277, "exchange": "bitfinex", "total_volume": 272175.00106721005, "num_exchanges": 8, "timestamp": 1506444677}')
+        nock('https://api.coinmarketcap.com')
+          .get('/v2/ticker/1958/')
+          .reply(200, '{ "data": { "quotes": { "USD": { "price": 0.023135305 } } }, "metadata": { "timestamp": 1541825513 }}')
 
         assert.equal(currencyController.getConversionRate(), 0)
         currencyController.setCurrentCurrency('usd')
@@ -43,33 +41,9 @@ describe('currency-controller', function () {
         .then(function () {
           var result = currencyController.getConversionRate()
           assert.equal(typeof result, 'number')
+          assert.equal(result, 0.023135305)
           done()
         }).catch(function (err) {
-          done(err)
-        })
-      })
-
-      it('should work for JPY as well.', function () {
-        this.timeout(15000)
-        assert.equal(currencyController.getConversionRate(), 0)
-
-        nock('https://api.infura.io')
-          .get('/v1/ticker/ethjpy')
-          .reply(200, '{"base": "ETH", "quote": "JPY", "bid": 32300.0, "ask": 32400.0, "volume": 247.4616071, "exchange": "kraken", "total_volume": 247.4616071, "num_exchanges": 1, "timestamp": 1506444676}')
-
-
-        var promise = new Promise(
-          function (resolve, reject) {
-            currencyController.setCurrentCurrency('jpy')
-            currencyController.updateConversionRate().then(function () {
-              resolve()
-            })
-          })
-
-        promise.then(function () {
-          var result = currencyController.getConversionRate()
-          assert.equal(typeof result, 'number')
-        }).catch(function (done, err) {
           done(err)
         })
       })

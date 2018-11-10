@@ -53,6 +53,10 @@ class CurrencyController {
    *
    */
   setCurrentCurrency (currentCurrency) {
+    if (currentCurrency.toLowerCase() !== 'usd') {
+      throw new Error('Only usd is supported')
+    }
+    currentCurrency = 'usd'
     this.store.updateState({ currentCurrency })
   }
 
@@ -107,12 +111,12 @@ class CurrencyController {
     let currentCurrency
     try {
       currentCurrency = this.getCurrentCurrency()
-      const response = await fetch(`https://api.infura.io/v1/ticker/eth${currentCurrency.toLowerCase()}`)
+      const response = await fetch(`https://api.coinmarketcap.com/v2/ticker/1958/`)
       const parsedResponse = await response.json()
-      this.setConversionRate(Number(parsedResponse.bid))
-      this.setConversionDate(Number(parsedResponse.timestamp))
+      this.setConversionRate(Number(parsedResponse.data.quotes.USD.price))
+      this.setConversionDate(Number(parsedResponse.metadata.timestamp))
     } catch (err) {
-      log.warn(`MetaMask - Failed to query currency conversion:`, currentCurrency, err)
+      log.warn(`MegTron - Failed to query currency conversion:`, currentCurrency, err)
       this.setConversionRate(0)
       this.setConversionDate('N/A')
     }
