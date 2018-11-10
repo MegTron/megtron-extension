@@ -4,7 +4,6 @@ const ethUtil = require('ethereumjs-util')
 const Transaction = require('ethereumjs-tx')
 const EthQuery = require('ethjs-query')
 const TransactionStateManager = require('./tx-state-manager')
-const TxGasUtil = require('./tx-gas-utils')
 const PendingTransactionTracker = require('./pending-tx-tracker')
 const NonceTracker = require('./nonce-tracker')
 const txUtils = require('./lib/util')
@@ -29,8 +28,6 @@ const { hexToBn, bnToHex, BnMultiplyByFraction } = require('../../lib/util')
     <br>- pendingTxTracker
       watching blocks for transactions to be include
       and emitting confirmed events
-    <br>- txGasUtil
-      gas calculations and safety buffering
     <br>- nonceTracker
       calculating nonces
 
@@ -60,7 +57,6 @@ class TransactionController extends EventEmitter {
 
     this.memStore = new ObservableStore({})
     this.query = new EthQuery(this.provider)
-    this.txGasUtil = new TxGasUtil(this.provider)
 
     this._mapMethods()
     this.txStateManager = new TransactionStateManager({
@@ -210,8 +206,7 @@ class TransactionController extends EventEmitter {
       gasPrice = this.getGasPrice ? this.getGasPrice() : await this.query.gasPrice()
     }
     txParams.gasPrice = ethUtil.addHexPrefix(gasPrice.toString(16))
-    // set gasLimit
-    return await this.txGasUtil.analyzeGasUsage(txMeta)
+    return {}
   }
 
   /**
