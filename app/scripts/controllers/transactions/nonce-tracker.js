@@ -103,6 +103,11 @@ class NonceTracker {
   }
 
   async _getNetworkNextNonce (address) {
+    return { name: 'network', nonce: 0, details: {
+      blockNumber: 0,
+      baseCount: 0,
+    }}
+    /*
     // calculate next nonce
     // we need to make sure our base count
     // and pending count are from the same block
@@ -112,6 +117,7 @@ class NonceTracker {
     assert(Number.isInteger(baseCount), `nonce-tracker - baseCount is not an integer - got: (${typeof baseCount}) "${baseCount}"`)
     const nonceDetails = { blockNumber, baseCount }
     return { name: 'network', nonce: baseCount, details: nonceDetails }
+    */
   }
 
   _getHighestLocallyConfirmed (address) {
