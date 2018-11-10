@@ -53,6 +53,25 @@ export function addFiat (...args) {
   })
 }
 
+export function getValueFromSun ({
+  value,
+  toCurrency,
+  conversionRate,
+  numberOfDecimals,
+  toDenomination,
+}) {
+  return conversionUtil(value, {
+    fromNumericBase: 'dec',
+    toNumericBase: 'dec',
+    fromCurrency: 'TRX',
+    toCurrency,
+    numberOfDecimals,
+    fromDenomination: 'SUN',
+    toDenomination,
+    conversionRate,
+  })
+}
+
 export function getValueFromWeiHex ({
   value,
   toCurrency,

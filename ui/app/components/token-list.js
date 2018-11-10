@@ -105,6 +105,9 @@ TokenList.prototype.createFreshTokenTracker = function () {
     this.tracker.removeListener('error', this.showError)
   }
 
+  return
+  // TODO(MegTron): implement
+  /*
   if (!global.ethereumProvider) return
   const { userAddress } = this.props
 
@@ -132,6 +135,7 @@ TokenList.prototype.createFreshTokenTracker = function () {
     log.error(`Problem updating balances`, reason)
     this.setState({ isLoading: false })
   })
+  */
 }
 
 TokenList.prototype.componentDidUpdate = function (nextProps) {

@@ -1,6 +1,6 @@
 const ObservableStore = require('obs-store')
 const extend = require('xtend')
-const EthQuery = require('eth-query')
+const TronQuery = require('../lib/tron-query')
 const log = require('loglevel')
 const pify = require('pify')
 
@@ -14,10 +14,10 @@ class RecentBlocksController {
    * @typedef {Object} RecentBlocksController
    * @param {object} opts Contains objects necessary for tracking blocks and querying the blockchain
    * @param {BlockTracker} opts.blockTracker Contains objects necessary for tracking blocks and querying the blockchain
-   * @param {BlockTracker} opts.provider The provider used to create a new EthQuery instance.
+   * @param {BlockTracker} opts.provider The provider used to create a new TronQuery instance.
    * @property {BlockTracker} blockTracker Points to the passed BlockTracker. On RecentBlocksController construction,
    * listens for 'latest' events so that new blocks can be processed and added to storage.
-   * @property {EthQuery} ethQuery Points to the EthQuery instance created with the passed provider
+   * @property {TronQuery} tronQuery Points to the TronQuery instance created with the passed provider
    * @property {number} historyLength The maximum length of blocks to track
    * @property {object} store Stores the recentBlocks
    * @property {array} store.recentBlocks Contains all recent blocks, up to a total that is equal to this.historyLength
@@ -26,7 +26,7 @@ class RecentBlocksController {
   constructor (opts = {}) {
     const { blockTracker, provider } = opts
     this.blockTracker = blockTracker
-    this.ethQuery = new EthQuery(provider)
+    this.tronQuery = new TronQuery(provider)
     this.historyLength = opts.historyLength || 40
 
     const initState = extend({
@@ -34,9 +34,10 @@ class RecentBlocksController {
     }, opts.initState)
     this.store = new ObservableStore(initState)
 
-    this.blockTracker.on('latest', async (newBlockNumberHex) => {
+    this.blockTracker.on('latest', async (newBlockNumber) => {
+      console.log('MegTronRecentBlocksController.onLatest', {newBlockNumber})
       try {
-        await this.processBlock(newBlockNumberHex)
+        await this.processBlock(newBlockNumber)
       } catch (err) {
         log.error(err)
       }
@@ -61,9 +62,9 @@ class RecentBlocksController {
    * @param {object} newBlock The new block to modify and add to the recentBlocks array
    *
    */
-  async processBlock (newBlockNumberHex) {
-    const newBlockNumber = Number.parseInt(newBlockNumberHex, 16)
-    const newBlock = await this.getBlockByNumber(newBlockNumber, true)
+  async processBlock (newBlockNumber) {
+    const newBlock = await this.getBlockByNumber(newBlockNumber)
+    console.log('MegTron.recent-blocks.processBlock', {newBlock})
     if (!newBlock) return
 
     const block = this.mapTransactionsToPrices(newBlock)
@@ -108,9 +109,10 @@ class RecentBlocksController {
    *
    */
   mapTransactionsToPrices (newBlock) {
+    // TODO(MegTron): gas price?
     const block = extend(newBlock, {
-      gasPrices: newBlock.transactions.map((tx) => {
-        return tx.gasPrice
+      gasPrices: (newBlock.transactions || []).map((tx) => {
+        return 0 // tx.gasPrice
       }),
     })
     delete block.transactions
@@ -128,14 +130,13 @@ class RecentBlocksController {
    * @returns {Promise<void>} Promises undefined
    */
   async backfill () {
-    this.blockTracker.once('latest', async (blockNumberHex) => {
-      const currentBlockNumber = Number.parseInt(blockNumberHex, 16)
+    this.blockTracker.once('latest', async (currentBlockNumber) => {
       const blocksToFetch = Math.min(currentBlockNumber, this.historyLength)
       const prevBlockNumber = currentBlockNumber - 1
       const targetBlockNumbers = Array(blocksToFetch).fill().map((_, index) => prevBlockNumber - index)
       await Promise.all(targetBlockNumbers.map(async (targetBlockNumber) => {
         try {
-          const newBlock = await this.getBlockByNumber(targetBlockNumber, true)
+          const newBlock = await this.getBlockByNumber(targetBlockNumber)
           if (!newBlock) return
 
           this.backfillBlock(newBlock)
@@ -147,15 +148,14 @@ class RecentBlocksController {
   }
 
   /**
-   * Uses EthQuery to get a block that has a given block number.
+   * Uses TronQuery to get a block that has a given block number.
    *
    * @param {number} number The number of the block to get
    * @returns {Promise<object>} Promises A block with the passed number
    *
    */
   async getBlockByNumber (number) {
-    const blockNumberHex = '0x' + number.toString(16)
-    return await pify(this.ethQuery.getBlockByNumber).call(this.ethQuery, blockNumberHex, true)
+    return await pify(this.tronQuery.getBlockByNumber).call(this.tronQuery, { num: number })
   }
 
 }

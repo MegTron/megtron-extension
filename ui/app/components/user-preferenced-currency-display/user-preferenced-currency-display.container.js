@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import UserPreferencedCurrencyDisplay from './user-preferenced-currency-display.component'
 import { preferencesSelector } from '../../selectors'
-import { ETH, PRIMARY, SECONDARY } from '../../constants/common'
+import { TRX, PRIMARY, SECONDARY } from '../../constants/common'
 
 const mapStateToProps = (state, ownProps) => {
   const { useETHAsPrimaryCurrency } = preferencesSelector(state)
@@ -28,8 +28,8 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
 
   if (type === PRIMARY && useETHAsPrimaryCurrency ||
     type === SECONDARY && !useETHAsPrimaryCurrency) {
-    // Display ETH
-    currency = ETH
+    // Display TRX
+    currency = TRX
     numberOfDecimals = propsNumberOfDecimals || ethNumberOfDecimals || 6
     prefix = propsPrefix || ethPrefix
   } else if (type === SECONDARY && useETHAsPrimaryCurrency ||

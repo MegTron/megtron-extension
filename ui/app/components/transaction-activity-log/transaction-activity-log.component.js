@@ -4,7 +4,7 @@ import classnames from 'classnames'
 import { getActivities } from './transaction-activity-log.util'
 import Card from '../card'
 import { getEthConversionFromWeiHex, getValueFromWeiHex } from '../../helpers/conversions.util'
-import { ETH } from '../../constants/common'
+import { TRX } from '../../constants/common'
 import { formatDate } from '../../util'
 
 export default class TransactionActivityLog extends PureComponent {
@@ -46,11 +46,11 @@ export default class TransactionActivityLog extends PureComponent {
     const ethValue = index === 0
       ? `${getValueFromWeiHex({
         value,
-        toCurrency: ETH,
+        toCurrency: TRX,
         conversionRate,
         numberOfDecimals: 6,
-      })} ${ETH}`
-      : getEthConversionFromWeiHex({ value, toCurrency: ETH, conversionRate })
+      })} ${TRX}`
+      : getEthConversionFromWeiHex({ value, toCurrency: TRX, conversionRate })
     const formattedTimestamp = formatDate(timestamp)
     const activityText = this.context.t(eventKey, [ethValue, formattedTimestamp])
 

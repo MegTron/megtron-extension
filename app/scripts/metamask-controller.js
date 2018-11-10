@@ -27,7 +27,7 @@ const CurrencyController = require('./controllers/currency')
 const NoticeController = require('./notice-controller')
 const ShapeShiftController = require('./controllers/shapeshift')
 const AddressBookController = require('./controllers/address-book')
-const InfuraController = require('./controllers/infura')
+const TrongridController = require('./controllers/trongrid')
 const BlacklistController = require('./controllers/blacklist')
 const RecentBlocksController = require('./controllers/recent-blocks')
 const MessageManager = require('./lib/message-manager')
@@ -49,9 +49,10 @@ const seedPhraseVerifier = require('./lib/seed-phrase-verifier')
 const log = require('loglevel')
 const TrezorKeyring = require('eth-trezor-keyring')
 const LedgerBridgeKeyring = require('eth-ledger-bridge-keyring')
-const EthQuery = require('eth-query')
+const TronQuery = require('./lib/tron-query')
 const ethUtil = require('ethereumjs-util')
 const sigUtil = require('eth-sig-util')
+const { base58ToHexString } = require('tron-keyring-controller')
 
 module.exports = class MetamaskController extends EventEmitter {
 
@@ -100,11 +101,11 @@ module.exports = class MetamaskController extends EventEmitter {
     this.currencyController.updateConversionRate()
     this.currencyController.scheduleConversionInterval()
 
-    // infura controller
-    this.infuraController = new InfuraController({
-      initState: initState.InfuraController,
+    // trongrid controller
+    this.trongridController = new TrongridController({
+      initState: initState.TrongridController,
     })
-    this.infuraController.scheduleInfuraNetworkCheck()
+    this.trongridController.scheduleTrongridNetworkCheck()
 
     this.blacklistController = new BlacklistController()
     this.blacklistController.scheduleUpdates()
@@ -226,7 +227,7 @@ module.exports = class MetamaskController extends EventEmitter {
       NoticeController: this.noticeController.store,
       ShapeShiftController: this.shapeshiftController.store,
       NetworkController: this.networkController.store,
-      InfuraController: this.infuraController.store,
+      TrongridController: this.trongridController.store,
     })
 
     this.memStore = new ComposableObservableStore(null, {
@@ -245,7 +246,7 @@ module.exports = class MetamaskController extends EventEmitter {
       CurrencyController: this.currencyController.store,
       NoticeController: this.noticeController.memStore,
       ShapeshiftController: this.shapeshiftController.store,
-      InfuraController: this.infuraController.store,
+      TrongridController: this.trongridController.store,
     })
     this.memStore.subscribe(this.sendUpdate.bind(this))
   }
@@ -493,9 +494,9 @@ module.exports = class MetamaskController extends EventEmitter {
       // create new vault
       const vault = await keyringController.createNewVaultAndRestore(password, seed)
 
-      const ethQuery = new EthQuery(this.provider)
+      const tronQuery = new TronQuery(this.provider)
       accounts = await keyringController.getAccounts()
-      lastBalance = await this.getBalance(accounts[accounts.length - 1], ethQuery)
+      lastBalance = await this.getBalance(accounts[accounts.length - 1], tronQuery)
 
       const primaryKeyring = keyringController.getKeyringsByType('HD Key Tree')[0]
       if (!primaryKeyring) {
@@ -506,7 +507,7 @@ module.exports = class MetamaskController extends EventEmitter {
       while (lastBalance !== '0x0') {
         await keyringController.addNewAccount(primaryKeyring)
         accounts = await keyringController.getAccounts()
-        lastBalance = await this.getBalance(accounts[accounts.length - 1], ethQuery)
+        lastBalance = await this.getBalance(accounts[accounts.length - 1], tronQuery)
       }
 
       // set new identities
@@ -523,21 +524,26 @@ module.exports = class MetamaskController extends EventEmitter {
   /**
    * Get an account balance from the AccountTracker or request it directly from the network.
    * @param {string} address - The account address
-   * @param {EthQuery} ethQuery - The EthQuery instance to use when asking the network
+   * @param {TronQuery} tronQuery - The TronQuery instance to use when asking the network
    */
-  getBalance (address, ethQuery) {
+  getBalance (address, tronQuery) {
     return new Promise((resolve, reject) => {
       const cached = this.accountTracker.store.getState().accounts[address]
 
       if (cached && cached.balance) {
         resolve(cached.balance)
       } else {
-        ethQuery.getBalance(address, (error, balance) => {
+        // TODO(MegTron): remove comment
+        console.log('MegTron.metamask-controller.getBalance', {address})
+        tronQuery.getBalance({ address: base58ToHexString(address) }, (error, accountResponse) => {
           if (error) {
             reject(error)
             log.error(error)
           } else {
-            resolve(balance || '0x0')
+            const result = (accountResponse.balance || 0).toString()
+            // TODO(MegTron): remove comment
+            console.log('MegTron.metamask-controller.getBalance', { accountResponse, result })
+            resolve(result)
           }
         })
       }
@@ -1122,6 +1128,11 @@ module.exports = class MetamaskController extends EventEmitter {
   }
 
   estimateGas (estimateGasParams) {
+    // TODO(MegTron):update
+    return new Promise((resolve, reject) => {
+      return resolve(0)
+    })
+    /*
     return new Promise((resolve, reject) => {
       return this.txController.txGasUtil.query.estimateGas(estimateGasParams, (err, res) => {
         if (err) {
@@ -1131,6 +1142,7 @@ module.exports = class MetamaskController extends EventEmitter {
         return resolve(res)
       })
     })
+    */
   }
 
 //=============================================================================

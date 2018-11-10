@@ -2344,6 +2344,9 @@ function setNetworkNonce (networkNonce) {
 function updateNetworkNonce (address) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
+      resolve(0)
+      // TODO(MegTron): remove?
+      /*
       global.ethQuery.getTransactionCount(address, (err, data) => {
         if (err) {
           dispatch(actions.displayWarning(err.message))
@@ -2352,6 +2355,7 @@ function updateNetworkNonce (address) {
         dispatch(setNetworkNonce(data))
         resolve(data)
       })
+      */
     })
   }
 }

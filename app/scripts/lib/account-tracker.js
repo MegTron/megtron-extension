@@ -7,10 +7,11 @@
  * on each new block.
  */
 
-const EthQuery = require('eth-query')
+const TronQuery = require('./tron-query')
 const ObservableStore = require('obs-store')
 const log = require('loglevel')
 const pify = require('pify')
+const { base58ToHexString } = require('tron-keyring-controller')
 
 
 class AccountTracker {
@@ -26,8 +27,8 @@ class AccountTracker {
    * @property {Object} store The stored object containing all accounts to track, as well as the current block's gas limit.
    * @property {Object} store.accounts The accounts currently stored in this AccountTracker
    * @property {string} store.currentBlockGasLimit A hex string indicating the gas limit of the current block
-   * @property {Object} _provider A provider needed to create the EthQuery instance used within this AccountTracker.
-   * @property {EthQuery} _query An EthQuery instance used to access account information from the blockchain
+   * @property {Object} _provider A provider needed to create the TronQuery instance used within this AccountTracker.
+   * @property {TronQuery} _query An TronQuery instance used to access account information from the blockchain
    * @property {BlockTracker} _blockTracker A BlockTracker instance. Needed to ensure that accounts and their info updates
    * when a new block is created.
    * @property {Object} _currentBlockNumber Reference to a property on the _blockTracker: the number (i.e. an id) of the the current block
@@ -41,7 +42,7 @@ class AccountTracker {
     this.store = new ObservableStore(initState)
 
     this._provider = opts.provider
-    this._query = pify(new EthQuery(this._provider))
+    this._query = pify(new TronQuery(this._provider))
     this._blockTracker = opts.blockTracker
     // blockTracker.currentBlock may be null
     this._currentBlockNumber = this._blockTracker.getCurrentBlock()
@@ -71,7 +72,7 @@ class AccountTracker {
    * AccountTracker.
    *
    * Once this AccountTracker's accounts are up to date with those referenced by the passed addresses, each
-   * of these accounts are given an updated balance via EthQuery.
+   * of these accounts are given an updated balance via TronQuery.
    *
    * @param {array} address The array of hex addresses for accounts with which this AccountTracker's accounts should be
    * in sync
@@ -137,7 +138,7 @@ class AccountTracker {
 
   /**
    * Given a block, updates this AccountTracker's currentBlockGasLimit, and then updates each local account's balance
-   * via EthQuery
+   * via TronQuery
    *
    * @private
    * @param {number} blockNumber the block number to update to.
@@ -146,12 +147,6 @@ class AccountTracker {
    */
   async _updateForBlock (blockNumber) {
     this._currentBlockNumber = blockNumber
-
-    // block gasLimit polling shouldn't be in account-tracker shouldn't be here...
-    const currentBlock = await this._query.getBlockByNumber(blockNumber, false)
-    if (!currentBlock) return
-    const currentBlockGasLimit = currentBlock.gasLimit
-    this.store.updateState({ currentBlockGasLimit })
 
     try {
       await this._updateAccounts()
@@ -182,7 +177,9 @@ class AccountTracker {
    */
   async _updateAccount (address) {
     // query balance
-    const balance = await this._query.getBalance(address)
+    const balanceResult = await this._query.getBalance({ address: base58ToHexString(address) })
+    const balanceNum = balanceResult.balance || 0
+    const balance = balanceNum.toString()
     const result = { address, balance }
     // update accounts state
     const { accounts } = this.store.getState()

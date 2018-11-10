@@ -1,6 +1,6 @@
 import ethUtil from 'ethereumjs-util'
 import { conversionUtil } from '../conversion-util'
-import { ETH, GWEI, WEI } from '../constants/common'
+import { TRX, SUN, ETH, GWEI, WEI } from '../constants/common'
 
 export function bnToHex (inputBn) {
   return ethUtil.addHexPrefix(inputBn.toString(16))
@@ -41,6 +41,25 @@ export function getEthConversionFromWeiHex ({ value, conversionRate, numberOfDec
   }
 
   return nonZeroDenomination
+}
+
+export function getValueFromSun ({
+  value,
+  toCurrency,
+  conversionRate,
+  numberOfDecimals,
+  toDenomination,
+}) {
+  return conversionUtil(value, {
+    fromNumericBase: 'dec',
+    toNumericBase: 'dec',
+    fromCurrency: TRX,
+    toCurrency,
+    numberOfDecimals,
+    fromDenomination: SUN,
+    toDenomination,
+    conversionRate,
+  })
 }
 
 export function getValueFromWeiHex ({

@@ -2,13 +2,13 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import UnitInput from '../unit-input'
 import CurrencyDisplay from '../currency-display'
-import { getValueFromWeiHex, getWeiHexFromDecimalValue } from '../../helpers/conversions.util'
-import { ETH } from '../../constants/common'
+import { getValueFromSun, getWeiHexFromDecimalValue } from '../../helpers/conversions.util'
+import { TRX } from '../../constants/common'
 
 /**
  * Component that allows user to enter currency values as a number, and props receive a converted
  * hex value in WEI. props.value, used as a default or forced value, should be a hex value, which
- * gets converted into a decimal value depending on the currency (ETH or Fiat).
+ * gets converted into a decimal value depending on the currency (TRX or Fiat).
  */
 export default class CurrencyInput extends PureComponent {
   static propTypes = {
@@ -47,11 +47,11 @@ export default class CurrencyInput extends PureComponent {
   getDecimalValue (props) {
     const { value: hexValue, useFiat, currentCurrency, conversionRate } = props
     const decimalValueString = useFiat
-      ? getValueFromWeiHex({
+      ? getValueFromSun({
         value: hexValue, toCurrency: currentCurrency, conversionRate, numberOfDecimals: 2,
       })
-      : getValueFromWeiHex({
-        value: hexValue, toCurrency: ETH, numberOfDecimals: 6,
+      : getValueFromSun({
+        value: hexValue, toCurrency: TRX, numberOfDecimals: 6,
       })
 
     return Number(decimalValueString) || 0
@@ -65,7 +65,7 @@ export default class CurrencyInput extends PureComponent {
         value: decimalValue, fromCurrency, conversionRate, invertConversionRate: true,
       })
       : getWeiHexFromDecimalValue({
-        value: decimalValue, fromCurrency: ETH, fromDenomination: ETH, conversionRate,
+        value: decimalValue, fromCurrency: TRX, fromDenomination: TRX, conversionRate,
       })
 
     this.setState({ hexValue, decimalValue })
@@ -82,8 +82,8 @@ export default class CurrencyInput extends PureComponent {
     let currency, numberOfDecimals
 
     if (useFiat) {
-      // Display ETH
-      currency = ETH
+      // Display TRX
+      currency = TRX
       numberOfDecimals = 6
     } else {
       // Display Fiat
