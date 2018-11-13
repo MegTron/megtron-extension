@@ -10,7 +10,7 @@ describe('TronJsonRpcTrongrid', () => {
         params: {},
       }
       const { fetchUrl, fetchParams } = fetchConfigFromReq({ network, req })
-      assert.strictEqual(fetchUrl, 'https://api.trongrid.io/walletsolidity/getnowblock?params=%7B%7D')
+      assert.strictEqual(fetchUrl, 'https://api.trongrid.io/walletsolidity/getnowblock?params={}')
       assert.deepEqual(fetchParams, { method: 'GET' })
     })
 
@@ -21,7 +21,7 @@ describe('TronJsonRpcTrongrid', () => {
         params: {},
       }
       const { fetchUrl, fetchParams } = fetchConfigFromReq({ network, req })
-      assert.strictEqual(fetchUrl, 'https://api.shasta.trongrid.io/walletsolidity/getnowblock?params=%7B%7D')
+      assert.strictEqual(fetchUrl, 'https://api.shasta.trongrid.io/walletsolidity/getnowblock?params={}')
       assert.deepEqual(fetchParams, { method: 'GET' })
     })
 
