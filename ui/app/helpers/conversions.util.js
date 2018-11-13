@@ -43,6 +43,25 @@ export function getEthConversionFromWeiHex ({ value, conversionRate, numberOfDec
   return nonZeroDenomination
 }
 
+export function getValueFromSunHex ({
+  value,
+  toCurrency,
+  conversionRate,
+  numberOfDecimals,
+  toDenomination,
+}) {
+  return conversionUtil(value, {
+    fromNumericBase: 'hex',
+    toNumericBase: 'dec',
+    fromCurrency: TRX,
+    toCurrency,
+    numberOfDecimals,
+    fromDenomination: SUN,
+    toDenomination,
+    conversionRate,
+  })
+}
+
 export function getValueFromSun ({
   value,
   toCurrency,
@@ -81,6 +100,26 @@ export function getValueFromWeiHex ({
   })
 }
 
+export function getSunHexFromDecimalValue({
+  value,
+  fromCurrency,
+  conversionRate,
+  fromDenomination,
+  invertConversionRate,
+}) {
+  return conversionUtil(value, {
+    fromNumericBase: 'dec',
+    toNumericBase: 'hex',
+    toCurrency: TRX,
+    fromCurrency,
+    conversionRate,
+    invertConversionRate,
+    fromDenomination,
+    toDenomination: SUN,
+  })
+}
+
+/* Deprecated
 export function getWeiHexFromDecimalValue ({
   value,
   fromCurrency,
@@ -99,3 +138,4 @@ export function getWeiHexFromDecimalValue ({
     toDenomination: WEI,
   })
 }
+*/

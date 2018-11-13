@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import UnitInput from '../unit-input'
 import CurrencyDisplay from '../currency-display'
-import { getValueFromSun, getWeiHexFromDecimalValue } from '../../helpers/conversions.util'
+import { getValueFromSunHex, getSunHexFromDecimalValue} from '../../helpers/conversions.util'
 import { TRX } from '../../constants/common'
 
 /**
@@ -47,10 +47,10 @@ export default class CurrencyInput extends PureComponent {
   getDecimalValue (props) {
     const { value: hexValue, useFiat, currentCurrency, conversionRate } = props
     const decimalValueString = useFiat
-      ? getValueFromSun({
+      ? getValueFromSunHex({
         value: hexValue, toCurrency: currentCurrency, conversionRate, numberOfDecimals: 2,
       })
-      : getValueFromSun({
+      : getValueFromSunHex({
         value: hexValue, toCurrency: TRX, numberOfDecimals: 6,
       })
 
@@ -61,10 +61,10 @@ export default class CurrencyInput extends PureComponent {
     const { useFiat, currentCurrency: fromCurrency, conversionRate, onChange } = this.props
 
     const hexValue = useFiat
-      ? getWeiHexFromDecimalValue({
+      ? getSunHexFromDecimalValue({
         value: decimalValue, fromCurrency, conversionRate, invertConversionRate: true,
       })
-      : getWeiHexFromDecimalValue({
+      : getSunHexFromDecimalValue({
         value: decimalValue, fromCurrency: TRX, fromDenomination: TRX, conversionRate,
       })
 

@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import UnitInput from '../unit-input'
 import CurrencyDisplay from '../currency-display'
-import { getWeiHexFromDecimalValue } from '../../helpers/conversions.util'
+import { getSunHexFromDecimalValue } from '../../helpers/conversions.util'
 import ethUtil from 'ethereumjs-util'
 import { conversionUtil, multiplyCurrencies } from '../../conversion-util'
 import { TRX } from '../../constants/common'
@@ -53,7 +53,6 @@ export default class TokenInput extends PureComponent {
 
   getDecimalValue (props) {
     const { value: hexValue, selectedToken: { decimals, symbol } = {} } = props
-
     const multiplier = Math.pow(10, Number(decimals || 0))
     const decimalValueString = conversionUtil(ethUtil.addHexPrefix(hexValue), {
       fromNumericBase: 'hex',
@@ -96,7 +95,8 @@ export default class TokenInput extends PureComponent {
     }
 
     const decimalEthValue = (decimalValue * selectedTokenExchangeRate) || 0
-    const hexWeiValue = getWeiHexFromDecimalValue({
+    
+    const hexWeiValue = getSunHexFromDecimalValue({
       value: decimalEthValue,
       fromCurrency: TRX,
       fromDenomination: TRX,

@@ -48,7 +48,7 @@ describe('CurrencyInput container', () => {
       assert.deepEqual(mergeProps(mockStateProps, mockDispatchProps, {}), {
         conversionRate: 280.45,
         currentCurrency: 'usd',
-        suffix: 'ETH',
+        suffix: 'TRX',
       })
     })
   })

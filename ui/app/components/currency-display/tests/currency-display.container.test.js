@@ -40,7 +40,7 @@ describe('CurrencyDisplay container', () => {
       const tests = [
         {
           props: {
-            value: '0x2386f26fc10000',
+            value: '0x2710', // 1e4
             numberOfDecimals: 2,
             currency: 'usd',
           },
@@ -50,7 +50,7 @@ describe('CurrencyDisplay container', () => {
         },
         {
           props: {
-            value: '0x2386f26fc10000',
+            value: '0x2710',
           },
           result: {
             displayValue: '$2.80 USD',
@@ -58,18 +58,18 @@ describe('CurrencyDisplay container', () => {
         },
         {
           props: {
-            value: '0x1193461d01595930',
-            currency: 'ETH',
+            value: '0x135301',
+            currency: 'TRX',
             numberOfDecimals: 3,
           },
           result: {
-            displayValue: '1.266 ETH',
+            displayValue: '1.266 TRX',
           },
         },
         {
           props: {
-            value: '0x1193461d01595930',
-            currency: 'ETH',
+            value: '0x135301',
+            currency: 'TRX',
             numberOfDecimals: 3,
             hideLabel: true,
           },
@@ -79,35 +79,13 @@ describe('CurrencyDisplay container', () => {
         },
         {
           props: {
-            value: '0x3b9aca00',
-            currency: 'ETH',
-            denomination: 'GWEI',
+            value: '0xf4240',
+            currency: 'TRX',
+            denomination: 'SUN',
             hideLabel: true,
           },
           result: {
-            displayValue: '1',
-          },
-        },
-        {
-          props: {
-            value: '0x3b9aca00',
-            currency: 'ETH',
-            denomination: 'WEI',
-            hideLabel: true,
-          },
-          result: {
-            displayValue: '1000000000',
-          },
-        },
-        {
-          props: {
-            value: '0x3b9aca00',
-            currency: 'ETH',
-            numberOfDecimals: 100,
-            hideLabel: true,
-          },
-          result: {
-            displayValue: '1e-9',
+            displayValue: '1000000',
           },
         },
       ]

@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import CurrencyDisplay from './currency-display.component'
-import { getValueFromSun, formatCurrency } from '../../helpers/confirm-transaction/util'
+import { getValueFromSunHex, formatCurrency } from '../../helpers/confirm-transaction/util'
 
 const mapStateToProps = state => {
   const { metamask: { currentCurrency, conversionRate } } = state
@@ -23,7 +23,7 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
   } = ownProps
 
   const toCurrency = currency || currentCurrency
-  const convertedValue = getValueFromSun({
+  const convertedValue = getValueFromSunHex({
     value, toCurrency, conversionRate, numberOfDecimals, toDenomination: denomination,
   })
   const formattedValue = formatCurrency(convertedValue, toCurrency)

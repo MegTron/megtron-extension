@@ -8,7 +8,7 @@ import {
   addFiat,
   roundExponential,
 } from '../../../helpers/confirm-transaction/util'
-import { getWeiHexFromDecimalValue } from '../../../helpers/conversions.util'
+import { getSunHexFromDecimalValue } from '../../../helpers/conversions.util'
 import { ETH, PRIMARY } from '../../../constants/common'
 
 export default class ConfirmTokenTransactionBase extends Component {
@@ -43,7 +43,7 @@ export default class ConfirmTokenTransactionBase extends Component {
     const { contractExchangeRate, tokenAmount } = this.props
 
     const decimalEthValue = (tokenAmount * contractExchangeRate) || 0
-    const hexWeiValue = getWeiHexFromDecimalValue({
+    const hexWeiValue = getSunHexFromDecimalValue({
       value: decimalEthValue,
       fromCurrency: ETH,
       fromDenomination: ETH,
