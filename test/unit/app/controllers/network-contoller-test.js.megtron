@@ -72,26 +72,14 @@ describe('Network utils', () => {
   it('getNetworkDisplayName should return the correct network name', () => {
     const tests = [
       {
-        input: 3,
-        expected: 'Ropsten',
+        input: 5,
+        expected: 'Shasta Tron Network',
       }, {
-        input: 4,
-        expected: 'Rinkeby',
-      }, {
-        input: 42,
-        expected: 'Kovan',
-      }, {
-        input: 'ropsten',
-        expected: 'Ropsten',
-      }, {
-        input: 'rinkeby',
-        expected: 'Rinkeby',
-      }, {
-        input: 'kovan',
-        expected: 'Kovan',
+        input: 'shasta',
+        expected: 'Shasta Tron Network',
       }, {
         input: 'mainnet',
-        expected: 'Main Ethereum Network',
+        expected: 'Main Tron Network',
       },
     ]
 
