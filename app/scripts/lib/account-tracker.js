@@ -12,6 +12,7 @@ const ObservableStore = require('obs-store')
 const log = require('loglevel')
 const pify = require('pify')
 const { base58ToHexString } = require('tron-keyring-controller')
+const intToHex = require('ethereumjs-util').intToHex
 
 
 class AccountTracker {
@@ -179,7 +180,7 @@ class AccountTracker {
     // query balance
     const balanceResult = await this._query.getBalance({ address: base58ToHexString(address) })
     const balanceNum = balanceResult.balance || 0
-    const balance = balanceNum.toString()
+    const balance = intToHex(balanceNum)
     const result = { address, balance }
     // update accounts state
     const { accounts } = this.store.getState()
