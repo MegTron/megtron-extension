@@ -43,6 +43,7 @@ TokenList.prototype.render = function () {
       balance: assetInfo.value.toString(),
       decimals: 0,
       symbol: assetInfo.key,
+      assetKey: assetInfo.key,
     }
     return h(TokenCell, tokenInfo)
   }))

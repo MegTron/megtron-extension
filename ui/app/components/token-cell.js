@@ -3,7 +3,6 @@ const h = require('react-hyperscript')
 const inherits = require('util').inherits
 const connect = require('react-redux').connect
 const Identicon = require('./identicon')
-const prefixForNetwork = require('../../lib/etherscan-prefix-for-network')
 const selectors = require('../selectors')
 const actions = require('../actions')
 const { conversionUtil, multiplyCurrencies } = require('../conversion-util')
@@ -44,7 +43,6 @@ TokenCell.prototype.render = function () {
   const { tokenMenuOpen } = this.state
   const props = this.props
   const {
-    address,
     symbol,
     string,
     network,
@@ -57,14 +55,15 @@ TokenCell.prototype.render = function () {
     currentCurrency,
     // userAddress,
     image,
+    assetKey,
   } = props
   let currentTokenToFiatRate
   let currentTokenInFiat
   let formattedFiat = ''
 
-  if (contractExchangeRates[address]) {
+  if (contractExchangeRates[assetKey]) {
     currentTokenToFiatRate = multiplyCurrencies(
-      contractExchangeRates[address],
+      contractExchangeRates[assetKey],
       conversionRate
     )
     currentTokenInFiat = conversionUtil(string, {
@@ -83,19 +82,17 @@ TokenCell.prototype.render = function () {
 
   return (
     h('div.token-list-item', {
-      className: `token-list-item ${selectedTokenAddress === address ? 'token-list-item--active' : ''}`,
-      // style: { cursor: network === '1' ? 'pointer' : 'default' },
-      // onClick: this.view.bind(this, address, userAddress, network),
+      className: `token-list-item ${selectedTokenAddress === assetKey ? 'token-list-item--active' : ''}`,
       onClick: () => {
-        setSelectedToken(address)
-        selectedTokenAddress !== address && sidebarOpen && hideSidebar()
+        setSelectedToken(assetKey)
+        selectedTokenAddress !== assetKey && sidebarOpen && hideSidebar()
       },
     }, [
 
       h(Identicon, {
         className: 'token-list-item__identicon',
         diameter: 50,
-        address,
+        address: assetKey,
         network,
         image,
       }),
@@ -118,48 +115,10 @@ TokenCell.prototype.render = function () {
 
       ]),
 
-
       tokenMenuOpen && h(TokenMenuDropdown, {
         onClose: () => this.setState({ tokenMenuOpen: false }),
-        token: { symbol, address },
+        token: { symbol, address: assetKey },
       }),
-
-      /*
-      h('button', {
-        onClick: this.send.bind(this, address),
-      }, 'SEND'),
-      */
-
     ])
   )
 }
-
-TokenCell.prototype.send = function (address, event) {
-  event.preventDefault()
-  event.stopPropagation()
-  const url = tokenFactoryFor(address)
-  if (url) {
-    navigateTo(url)
-  }
-}
-
-TokenCell.prototype.view = function (address, userAddress, network, event) {
-  const url = etherscanLinkFor(address, userAddress, network)
-  if (url) {
-    navigateTo(url)
-  }
-}
-
-function navigateTo (url) {
-  global.platform.openWindow({ url })
-}
-
-function etherscanLinkFor (tokenAddress, address, network) {
-  const prefix = prefixForNetwork(network)
-  return `https://${prefix}etherscan.io/token/${tokenAddress}?a=${address}`
-}
-
-function tokenFactoryFor (tokenAddress) {
-  return `https://tokenfactory.surge.sh/#/token/${tokenAddress}`
-}
-
