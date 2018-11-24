@@ -43,6 +43,7 @@ TokenCell.prototype.render = function () {
   const { tokenMenuOpen } = this.state
   const props = this.props
   const {
+    address,
     symbol,
     string,
     network,
@@ -82,17 +83,17 @@ TokenCell.prototype.render = function () {
 
   return (
     h('div.token-list-item', {
-      className: `token-list-item ${selectedTokenAddress === assetKey ? 'token-list-item--active' : ''}`,
+      className: `token-list-item ${selectedTokenAddress === address ? 'token-list-item--active' : ''}`,
       onClick: () => {
-        setSelectedToken(assetKey)
-        selectedTokenAddress !== assetKey && sidebarOpen && hideSidebar()
+        setSelectedToken(address)
+        selectedTokenAddress !== address && sidebarOpen && hideSidebar()
       },
     }, [
 
       h(Identicon, {
         className: 'token-list-item__identicon',
         diameter: 50,
-        address: assetKey,
+        address: assetKey, // Use asset key instead of issuer's address. Otherwise the token will have same image as issuer account.
         network,
         image,
       }),
@@ -117,7 +118,7 @@ TokenCell.prototype.render = function () {
 
       tokenMenuOpen && h(TokenMenuDropdown, {
         onClose: () => this.setState({ tokenMenuOpen: false }),
-        token: { symbol, address: assetKey },
+        token: { symbol, address },
       }),
     ])
   )

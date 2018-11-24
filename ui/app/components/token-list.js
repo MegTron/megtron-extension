@@ -38,6 +38,7 @@ TokenList.prototype.render = function () {
   // TODO(MegTron): control what token to show.
   return h('div', userAsset.map((assetInfo) => {
     const tokenInfo = {
+      address: assetInfo.address,
       image: assetImages[assetInfo.key],
       string: assetInfo.value.toString(),
       balance: assetInfo.value.toString(),

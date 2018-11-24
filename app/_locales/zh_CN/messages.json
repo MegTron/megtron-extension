@@ -938,6 +938,9 @@
   "viewAccount": {
     "message": "查看账户"
   },
+  "viewOnTranscan": {
+    "message": "在Tronscan查看"
+  },
   "visitWebSite": {
     "message": "访问我们的网站"
   },

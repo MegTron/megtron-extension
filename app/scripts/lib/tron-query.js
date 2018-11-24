@@ -18,10 +18,12 @@ TronQuery.prototype.getTransactionCount = generateFnWithDefaultBlockFor(2, 'eth_
 TronQuery.prototype.getStorageAt = generateFnWithDefaultBlockFor(3, 'eth_getStorageAt')
 TronQuery.prototype.call = generateFnWithDefaultBlockFor(2, 'eth_call')
 */
-// standard
 TronQuery.prototype.getBalance = generateFnFor('wallet/getaccount')
 TronQuery.prototype.getBlockByNumber = generateFnFor('wallet/getblockbynum')
 TronQuery.prototype.getLatestBlock = generateFnFor('wallet/getnowblock')
+TronQuery.prototype.createTransaction = generateFnFor('wallet/createtransaction')
+TronQuery.prototype.broadcastTransaction = generateFnFor('wallet/broadcasttransaction')
+TronQuery.prototype.assetIssueByName = generateFnFor('wallet/getassetissuebyname')
 
 /*
 TronQuery.prototype.protocolVersion = generateFnFor('eth_protocolVersion')

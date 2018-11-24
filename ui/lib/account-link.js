@@ -1,12 +1,12 @@
-module.exports = function (address, network) {
+module.exports = function (address, network, assetKey = '') {
   const net = parseInt(network)
   let link
   switch (net) {
     case 1: // main net
-      link = `https://tronscan.org/#/address/${address}`
+      link = assetKey ? `https://tronscan.org/#/token/${assetKey}/${address}` : `https://tronscan.org/#/address/${address}`
       break
     case 5: // shasta test net
-      link = `https://explorer.shasta.trongrid.io/address/${address}`
+      link = assetKey ? `https://explorer.shasta.trongrid.io/token/${assetKey}/${address}` : `https://explorer.shasta.trongrid.io/address/${address}`
       break
     default:
       link = ''

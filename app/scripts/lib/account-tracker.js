@@ -11,7 +11,7 @@ const TronQuery = require('./tron-query')
 const ObservableStore = require('obs-store')
 const log = require('loglevel')
 const pify = require('pify')
-const { base58ToHexString } = require('tron-keyring-controller')
+const { base58ToHexString, hexStringToBase58 } = require('tron-keyring-controller')
 const intToHex = require('ethereumjs-util').intToHex
 
 
@@ -52,6 +52,7 @@ class AccountTracker {
     })
     // bind function for easier listener syntax
     this._updateForBlock = this._updateForBlock.bind(this)
+    this._assetAddressMap = {}
   }
 
   start () {
@@ -168,6 +169,15 @@ class AccountTracker {
     await Promise.all(addresses.map(this._updateAccount.bind(this)))
   }
 
+  async _getAssetAddress (assetKey) {
+    if (!this._assetAddressMap[assetKey]) {
+      const value = Buffer.from(assetKey).toString('hex')
+      const assetInfoResult = await this._query.assetIssueByName({ value })
+      this._assetAddressMap[assetKey] = hexStringToBase58(assetInfoResult.owner_address)
+    }
+    return this._assetAddressMap[assetKey]
+  }
+
   /**
    * Updates the current balance of an account.
    *
@@ -182,6 +192,9 @@ class AccountTracker {
     const balanceNum = balanceResult.balance || 0
     const balance = intToHex(balanceNum)
     const asset = balanceResult.asset || []
+    for (var i = 0; i < asset.length; i++) {
+      asset[i].address = await this._getAssetAddress(asset[i].key)
+    }
     const result = { address, balance, asset }
     // update accounts state
     const { accounts } = this.store.getState()

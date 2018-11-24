@@ -1282,6 +1282,9 @@
   "viewOnEtherscan": {
     "message": "View on Etherscan"
   },
+  "viewOnTronscan": {
+    "message": "View on Tronscan"
+  },
   "visitWebSite": {
     "message": "Visit our web site"
   },
