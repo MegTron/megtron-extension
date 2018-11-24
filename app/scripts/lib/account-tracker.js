@@ -172,7 +172,7 @@ class AccountTracker {
    * Updates the current balance of an account.
    *
    * @private
-   * @param {string} address A hex address of a the account to be updated
+   * @param {string} address A base58 address of a the account to be updated
    * @returns {Promise} after the account balance is updated
    *
    */
@@ -181,7 +181,8 @@ class AccountTracker {
     const balanceResult = await this._query.getBalance({ address: base58ToHexString(address) })
     const balanceNum = balanceResult.balance || 0
     const balance = intToHex(balanceNum)
-    const result = { address, balance }
+    const asset = balanceResult.asset || []
+    const result = { address, balance, asset }
     // update accounts state
     const { accounts } = this.store.getState()
     // only populate if the entry is still present
