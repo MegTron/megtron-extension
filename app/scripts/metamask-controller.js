@@ -504,7 +504,7 @@ module.exports = class MetamaskController extends EventEmitter {
       }
 
       // seek out the first zero balance
-      while (lastBalance !== '0x0') {
+      while (lastBalance !== '0x0' && lastBalance !== '0') {
         await keyringController.addNewAccount(primaryKeyring)
         accounts = await keyringController.getAccounts()
         lastBalance = await this.getBalance(accounts[accounts.length - 1], tronQuery)
