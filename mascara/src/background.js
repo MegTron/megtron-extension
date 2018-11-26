@@ -13,7 +13,7 @@ const Migrator = require('../../app/scripts/lib/migrator/')
 const migrations = require('../../app/scripts/migrations/')
 const firstTimeState = require('../../app/scripts/first-time-state')
 
-const STORAGE_KEY = 'metamask-config'
+const STORAGE_KEY = 'megtron-config'
 const METAMASK_DEBUG = process.env.METAMASK_DEBUG
 global.metamaskPopupIsOpen = false
 
