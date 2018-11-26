@@ -222,6 +222,7 @@
     "swappable-obj-proxy": "^1.1.0",
     "textarea-caret": "^3.0.1",
     "tron-keyring-controller": "git+https://github.com/MegTron/TronKeyringController.git",
+    "tronweb": "^2.1.9",
     "valid-url": "^1.0.9",
     "vreme": "^3.0.2",
     "web3": "^0.20.1",
