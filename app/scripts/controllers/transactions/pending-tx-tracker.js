@@ -1,6 +1,7 @@
 const EventEmitter = require('events')
 const log = require('loglevel')
-const EthQuery = require('ethjs-query')
+const pify = require('pify')
+const TronQuery = require('../../lib/tron-query')
 
 /**
 
@@ -11,47 +12,41 @@ const EthQuery = require('ethjs-query')
 <br>
 @param config {object} - non optional configuration object consists of:
     @param {Object} config.provider - A network provider.
-    @param {Object} config.nonceTracker see nonce tracker
     @param {function} config.getPendingTransactions a function for getting an array of transactions,
     @param {function} config.publishTransaction a async function for publishing raw transactions,
-
-
 @class
 */
 
 class PendingTransactionTracker extends EventEmitter {
   constructor (config) {
     super()
-    this.query = new EthQuery(config.provider)
-    this.nonceTracker = config.nonceTracker
+    this.query = pify(new TronQuery(config.provider))
     this.getPendingTransactions = config.getPendingTransactions
-    this.getCompletedTransactions = config.getCompletedTransactions
     this.publishTransaction = config.publishTransaction
-    this.confirmTransaction = config.confirmTransaction
   }
 
   /**
-    checks the network for signed txs and releases the nonce global lock if it is
+    checks the network for signed txs
   */
   async updatePendingTxs () {
-    // in order to keep the nonceTracker accurate we block it while updating pending transactions
-    const nonceGlobalLock = await this.nonceTracker.getGlobalLock()
+    console.log('MegTron.pending-tx-tracerk.updatePendingTxs')
     try {
       const pendingTxs = this.getPendingTransactions()
+      console.log('MegTron.pending-tx-tracerk.updatePendingTxs', { pendingTxs })
       await Promise.all(pendingTxs.map((txMeta) => this._checkPendingTx(txMeta)))
     } catch (err) {
       log.error('PendingTransactionTracker - Error updating pending transactions')
       log.error(err)
     }
-    nonceGlobalLock.releaseLock()
   }
 
   /**
     Will resubmit any transactions who have not been confirmed in a block
-    @param block {object} - a block object
+    @param blockNumber {number} - a block number
     @emits tx:warning
   */
   resubmitPendingTxs (blockNumber) {
+    console.log('MegTron.pending-tx-tracker.resubmitPendingTxs', { blockNumber })
     const pending = this.getPendingTransactions()
     // only try resubmitting if their are transactions to resubmit
     if (!pending.length) return
@@ -90,18 +85,18 @@ class PendingTransactionTracker extends EventEmitter {
   /**
     resubmits the individual txMeta used in resubmitPendingTxs
     @param txMeta {Object} - txMeta object
-    @param latestBlockNumber {string} - hex string for the latest block number
+    @param latestBlockNumber {number} - the latest block number
     @emits tx:retry
     @returns txHash {string}
   */
   async _resubmitTx (txMeta, latestBlockNumber) {
+    console.log('MegTron.pending-tx-tracker.resubmitTx', { txMeta, latestBlockNumber })
     if (!txMeta.firstRetryBlockNumber) {
       this.emit('tx:block-update', txMeta, latestBlockNumber)
     }
 
     const firstRetryBlockNumber = txMeta.firstRetryBlockNumber || latestBlockNumber
-    const txBlockDistance = Number.parseInt(latestBlockNumber, 16) - Number.parseInt(firstRetryBlockNumber, 16)
-
+    const txBlockDistance = latestBlockNumber - firstRetryBlockNumber
     const retryCount = txMeta.retryCount || 0
 
     // Exponential backoff to limit retries at publishing
@@ -126,7 +121,8 @@ class PendingTransactionTracker extends EventEmitter {
     @emits tx:warning
   */
   async _checkPendingTx (txMeta) {
-    const txHash = txMeta.hash
+    console.log('MegTron.pendingtxtracker.checkPendingTx', { txMeta })
+    const txHash = txMeta.txParams.txID
     const txId = txMeta.id
 
     // extra check in case there was an uncaught error during the
@@ -138,44 +134,21 @@ class PendingTransactionTracker extends EventEmitter {
       return
     }
 
-    // If another tx with the same nonce is mined, set as failed.
-    const taken = await this._checkIfNonceIsTaken(txMeta)
-    if (taken) {
-      const nonceTakenErr = new Error('Another transaction with this nonce has been mined.')
-      nonceTakenErr.name = 'NonceTakenErr'
-      return this.emit('tx:failed', txId, nonceTakenErr)
-    }
-
     // get latest transaction status
     try {
-      const txParams = await this.query.getTransactionByHash(txHash)
-      if (!txParams) return
-      if (txParams.blockNumber) {
+      const txInfo = await this.query.getTransactionInfoByID({ value: txHash })
+      if (!txInfo) return
+      if (txInfo.blockNumber) {
         this.emit('tx:confirmed', txId)
       }
     } catch (err) {
+      console.log('MegTron.pendingtxtracker.checkPendingTx', { err })
       txMeta.warning = {
         error: err.message,
         message: 'There was a problem loading this transaction.',
       }
       this.emit('tx:warning', txMeta, err)
     }
-  }
-
-  /**
-    checks to see if a confirmed txMeta has the same nonce
-    @param txMeta {Object} - txMeta object
-    @returns {boolean}
-  */
-
-
-  async _checkIfNonceIsTaken (txMeta) {
-    const address = txMeta.txParams.from
-    const completed = this.getCompletedTransactions(address)
-    const sameNonce = completed.filter((otherMeta) => {
-      return otherMeta.txParams.nonce === txMeta.txParams.nonce
-    })
-    return sameNonce.length > 0
   }
 }
 
