@@ -1,32 +1,27 @@
-/*global Web3*/
+/*global TronWeb*/
 cleanContextForImports()
-require('web3/dist/web3.min.js')
 const log = require('loglevel')
 const LocalMessageDuplexStream = require('post-message-stream')
 const setupDappAutoReload = require('./lib/auto-reload.js')
-const MetamaskInpageProvider = require('metamask-inpage-provider')
+const MegtronInpageProvider = require('./lib/megtron-inpage-provider')
+const TronWeb = require('tronweb')
 
 restoreContextAfterImports()
 
 log.setDefaultLevel(process.env.METAMASK_DEBUG ? 'debug' : 'warn')
-
-console.warn('ATTENTION: In an effort to improve user privacy, MetaMask will ' +
-'stop exposing user accounts to dapps by default beginning November 2nd, 2018. ' +
-'Dapps should call provider.enable() in order to view and use accounts. Please see ' +
-'https://bit.ly/2QQHXvF for complete information and up-to-date example code.')
 
 //
 // setup plugin communication
 //
 
 // setup background connection
-var metamaskStream = new LocalMessageDuplexStream({
+var megtronStream = new LocalMessageDuplexStream({
   name: 'inpage',
   target: 'contentscript',
 })
 
 // compose the inpage provider
-var inpageProvider = new MetamaskInpageProvider(metamaskStream)
+var inpageProvider = new MegtronInpageProvider(megtronStream)
 // set a high max listener count to avoid unnecesary warnings
 inpageProvider.setMaxListeners(100)
 
@@ -47,7 +42,7 @@ inpageProvider.enable = function (options = {}) {
   })
 }
 
-// Work around for web3@1.0 deleting the bound `sendAsync` but not the unbound
+// Work around for tronWeb deleting the bound `sendAsync` but not the unbound
 // `sendAsync` method on the prototype, causing `this` reference issues with drizzle
 const proxiedInpageProvider = new Proxy(inpageProvider, {
   // straight up lie that we deleted the property so that it doesnt
@@ -58,50 +53,94 @@ const proxiedInpageProvider = new Proxy(inpageProvider, {
 window.ethereum = proxiedInpageProvider
 
 //
-// setup web3
+// setup tronWeb
 //
 
-if (typeof window.web3 !== 'undefined') {
-  throw new Error(`MetaMask detected another web3.
-     MetaMask will not work reliably with another web3 extension.
-     This usually happens if you have two MetaMasks installed,
-     or MetaMask and another web3 extension. Please remove one
+if (typeof window.tronWeb !== 'undefined') {
+  throw new Error(`MegTron detected another tronWeb.
+     MegTron will not work reliably with another tronWeb extension.
+     This usually happens if you have two MegTron installed,
+     or MegTron and another tronWeb extension. Please remove one
      and try again.`)
 }
 
-var web3 = new Web3(proxiedInpageProvider)
-web3.setProvider = function () {
-  log.debug('MetaMask - overrode web3.setProvider')
+// TronWeb only allow providers of type HttpProvider at the moment.
+// This workaround changed the `isValidProvider` function to support MegtronInpageProvider.
+// Because provider is checked in the constructor, we create the tronWeb instance with dummy HttpProivder first,
+// then replace providers with MegtronInpageProvider.
+const dummyProvider = new TronWeb.providers.HttpProvider('http://127.0.0.1')
+var tronWeb = new TronWeb(dummyProvider, dummyProvider)
+const originalIsValidProvider = tronWeb.isValidProvider.bind(tronWeb)
+const originalSetAddress = tronWeb.setAddress.bind(tronWeb)
+const originalSign = tronWeb.trx.sign.bind(tronWeb.trx)
+tronWeb.isValidProvider = function (provider) {
+  return originalIsValidProvider(provider) || provider instanceof MegtronInpageProvider
 }
-log.debug('MetaMask - injected web3')
+tronWeb.setFullNode(proxiedInpageProvider)
+tronWeb.setSolidityNode(proxiedInpageProvider)
+tronWeb.setFullNode = () => new Error('MegTron has disabled this feature')
+tronWeb.setSolidityNode = () => new Error('MegTron has disabled this feature')
+tronWeb.setEventServer = () => new Error('MegTron has disabled this feature')
+tronWeb.setPrivateKey = () => new Error('MegTron has disabled this feature')
+tronWeb.setAddress = () => new Error('MegTron has disabled this feature')
 
-setupDappAutoReload(web3, inpageProvider.publicConfigStore)
+const sign = function (transaction, privateKey = false, useTronHeader = true, callback = false) {
+  if (tronWeb.utils.isFunction(privateKey)) {
+      callback = privateKey
+      privateKey = false
+  }
 
-// export global web3, with usage-detection and deprecation warning
+  if (tronWeb.utils.isFunction(useTronHeader)) {
+      callback = useTronHeader
+      useTronHeader = true
+  }
 
-/* TODO: Uncomment this area once auto-reload.js has been deprecated:
-let hasBeenWarned = false
-global.web3 = new Proxy(web3, {
-  get: (_web3, key) => {
-    // show warning once on web3 access
-    if (!hasBeenWarned && key !== 'currentProvider') {
-      console.warn('MetaMask: web3 will be deprecated in the near future in favor of the ethereumProvider \nhttps://github.com/MetaMask/faq/blob/master/detecting_metamask.md#web3-deprecation')
-      hasBeenWarned = true
-    }
-    // return value normally
-    return _web3[key]
-  },
-  set: (_web3, key, value) => {
-    // set value normally
-    _web3[key] = value
-  },
-})
-*/
+  if (!callback) {
+    // return promise
+    return new Promise((resolve, reject) => {
+      sign(transaction, privateKey, useTronHeader, (err, res) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(res)
+        }
+      })
+    })
+  }
 
-// set web3 defaultAccount
+  if (privateKey) {
+    return originalSign(transaction, privateKey, useTronHeader, callback)
+  }
+
+  if (!transaction) {
+    return callback('Invalid transaction provided')
+  }
+
+  // TODO(MegTron): how to check if user has unlocked
+  proxiedInpageProvider.request('wallet/gettransactionsign', { transaction }, 'post'
+  ).then(transaction => {
+    callback(null, transaction)
+  }).catch(err => {
+    log.err('Failed to sign transaction:', err)
+    callback(err)
+  })
+}
+tronWeb.trx.sign = (...args) => sign(...args)
+log.debug('MegTron - injected tronWeb')
+
+setupDappAutoReload(tronWeb, inpageProvider.publicConfigStore)
+
+// set tronWeb defaultAccount
 inpageProvider.publicConfigStore.subscribe(function (state) {
-  web3.eth.defaultAccount = state.selectedAddress
+  const currentAddress = tronWeb.defaultAddress.base58
+  const newAddress = state.selectedAddress || false
+  // TODO(MegTron): what if user logged out?
+  if (newAddress && newAddress !== currentAddress) {
+    console.log('MegTron.updateAddress', state.selectedAddress)
+    originalSetAddress(state.selectedAddress)
+  }
 })
+
 
 // need to make sure we aren't affected by overlapping namespaces
 // and that we dont affect the app with our namespace
@@ -118,7 +157,7 @@ function cleanContextForImports () {
   try {
     global.define = undefined
   } catch (_) {
-    console.warn('MetaMask - global.define could not be deleted.')
+    console.warn('MegTron - global.define could not be deleted.')
   }
 }
 
@@ -129,6 +168,6 @@ function restoreContextAfterImports () {
   try {
     global.define = __define
   } catch (_) {
-    console.warn('MetaMask - global.define could not be overwritten.')
+    console.warn('MegTron - global.define could not be overwritten.')
   }
 }
