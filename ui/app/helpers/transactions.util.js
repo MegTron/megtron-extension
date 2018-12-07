@@ -2,6 +2,7 @@ import ethUtil from 'ethereumjs-util'
 import MethodRegistry from 'eth-method-registry'
 import abi from 'human-standard-token-abi'
 import abiDecoder from 'abi-decoder'
+import TronWeb from 'tronweb'
 
 import {
   TOKEN_METHOD_TRANSFER,
@@ -19,6 +20,7 @@ import {
 
 import { addCurrencies } from '../conversion-util'
 
+const CONTRACT_TYPE_CREATE_SMART_CONTRACT = 'CreateSmartContract'
 abiDecoder.addABI(abi)
 
 export function getTokenData (data = '') {
@@ -39,9 +41,35 @@ export async function getMethodData (data = '') {
   }
 }
 
+export function getBase58Address (address) {
+  return TronWeb.address.fromHex(address)
+}
+
+export function getHexAddress (address) {
+  if (address.length === 44 && address.indexOf('0x') === 0) {
+    address = address.slice(2)
+  }
+  if (address.length === 42 && address.indexOf('41') === 0) {
+    return address
+  }
+  return TronWeb.address.toHex(address)
+}
+
+export function getFromAddress (txParams) {
+  return txParams.owner_address || txParams.raw_data.contract[0].parameter.value.owner_address
+}
+
+export function getToAddress (txParams) {
+  return txParams.to_address || txParams.raw_data.contract[0].parameter.value.to_address
+}
+
+export function getContractType (txParams) {
+  return txParams.raw_data.contract[0].type
+}
+
 export function isConfirmDeployContract (txData = {}) {
   const { txParams = {} } = txData
-  return !txParams.to
+  return getContractType(txParams) === CONTRACT_TYPE_CREATE_SMART_CONTRACT
 }
 
 /**

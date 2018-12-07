@@ -18,6 +18,7 @@ import { isBalanceSufficient } from '../../send/send.utils'
 import { conversionGreaterThan } from '../../../conversion-util'
 import { MIN_GAS_LIMIT_DEC } from '../../send/send.constants'
 import { addressSlicer, valuesFor } from '../../../util'
+import { getToAddress, getFromAddress, getBase58Address } from '../../../helpers/transactions.util'
 
 const casedContractMap = Object.keys(contractMap).reduce((acc, base) => {
   return {
@@ -46,7 +47,8 @@ const mapStateToProps = (state, props) => {
     nonce,
   } = confirmTransaction
   const { txParams = {}, lastGasPrice, id: transactionId } = txData
-  const { from: fromAddress, to: txParamsToAddress } = txParams
+  const fromAddress = getFromAddress(txParams)
+  const txParamsToAddress = getToAddress(txParams)
   const {
     conversionRate,
     identities,
@@ -61,7 +63,7 @@ const mapStateToProps = (state, props) => {
   const assetImage = assetImages[txParamsToAddress]
   const { balance } = accounts[selectedAddress]
   const { name: fromName } = identities[selectedAddress]
-  const toAddress = propsToAddress || txParamsToAddress
+  const toAddress = getBase58Address(propsToAddress || txParamsToAddress)
   const toName = identities[toAddress]
     ? identities[toAddress].name
     : casedContractMap[toAddress] ? casedContractMap[toAddress].name : addressSlicer(toAddress)
