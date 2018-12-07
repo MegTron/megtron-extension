@@ -42,6 +42,9 @@ export async function getMethodData (data = '') {
 }
 
 export function getBase58Address (address) {
+  if (!address) {
+    return address
+  }
   return TronWeb.address.fromHex(address)
 }
 
@@ -65,6 +68,10 @@ export function getToAddress (txParams) {
 
 export function getContractType (txParams) {
   return txParams.raw_data.contract[0].type
+}
+
+export function getTxParamsAmount (txParams) {
+  return txParams.amount || txParams.raw_data.contract[0].parameter.value.amount
 }
 
 export function isConfirmDeployContract (txData = {}) {

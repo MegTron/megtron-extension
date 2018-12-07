@@ -6,6 +6,7 @@ import {
 
 import {
   getValueFromWeiHex,
+  getValueFromSun,
   getTransactionFee,
   getHexGasTotal,
   addFiat,
@@ -17,6 +18,7 @@ import {
 import {
   getTokenData,
   getMethodData,
+  getTxParamsAmount,
   isSmartContractAddress,
   sumHexes,
 } from '../helpers/transactions.util'
@@ -292,50 +294,31 @@ export function updateTxDataAndCalculate (txData) {
     const state = getState()
     const currentCurrency = currentCurrencySelector(state)
     const conversionRate = conversionRateSelector(state)
+    console.log('MegTron.confirm-transaction.updateTxDataAndCalculate', { txData, currentCurrency, conversionRate })
 
     dispatch(updateTxData(txData))
 
-    const { txParams: { value = '0x0', gas: gasLimit = '0x0', gasPrice = '0x0' } = {} } = txData
+    const amount = getTxParamsAmount(txData.txParams)
+    const amountDec = amount.toString()
 
-    const fiatTransactionAmount = getValueFromWeiHex({
-      value, toCurrency: currentCurrency, conversionRate, numberOfDecimals: 2,
+    const fiatTransactionAmount = getValueFromSun({
+      value: amountDec, toCurrency: currentCurrency, conversionRate, numberOfDecimals: 2,
     })
-    const ethTransactionAmount = getValueFromWeiHex({
-      value, toCurrency: 'ETH', conversionRate, numberOfDecimals: 6,
+    const ethTransactionAmount = getValueFromSun({
+      value: amountDec, toCurrency: 'TRX', conversionRate, numberOfDecimals: 6,
     })
+    const hexTransactionAmount = '0x' + amount.toString(16)
+    console.log('MegTron.confirm-transaction.updateTxDataAndCalculate', { fiatTransactionAmount, ethTransactionAmount, hexTransactionAmount ,amount }) 
 
     dispatch(updateTransactionAmounts({
       fiatTransactionAmount,
       ethTransactionAmount,
-      hexTransactionAmount: value,
+      hexTransactionAmount,
     }))
-
-    const hexTransactionFee = getHexGasTotal({ gasLimit, gasPrice })
-
-    const fiatTransactionFee = getTransactionFee({
-      value: hexTransactionFee,
-      toCurrency: currentCurrency,
-      numberOfDecimals: 2,
-      conversionRate,
-    })
-    const ethTransactionFee = getTransactionFee({
-      value: hexTransactionFee,
-      toCurrency: 'ETH',
-      numberOfDecimals: 6,
-      conversionRate,
-    })
-
-    dispatch(updateTransactionFees({ fiatTransactionFee, ethTransactionFee, hexTransactionFee }))
-
-    const fiatTransactionTotal = addFiat(fiatTransactionFee, fiatTransactionAmount)
-    const ethTransactionTotal = addEth(ethTransactionFee, ethTransactionAmount)
-    console.log('HIHIH', value, hexTransactionFee)
-    const hexTransactionTotal = sumHexes(value, hexTransactionFee)
-
     dispatch(updateTransactionTotals({
-      fiatTransactionTotal,
-      ethTransactionTotal,
-      hexTransactionTotal,
+      fiatTransactionTotal: fiatTransactionAmount,
+      ethTransactionTotal: ethTransactionAmount,
+      hexTransactionTotal: hexTransactionAmount,
     }))
   }
 }

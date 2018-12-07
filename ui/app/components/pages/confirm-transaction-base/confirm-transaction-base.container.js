@@ -47,8 +47,8 @@ const mapStateToProps = (state, props) => {
     nonce,
   } = confirmTransaction
   const { txParams = {}, lastGasPrice, id: transactionId } = txData
-  const fromAddress = getFromAddress(txParams)
-  const txParamsToAddress = getToAddress(txParams)
+  const fromAddress = getBase58Address(getFromAddress(txParams))
+  const txParamsToAddress = getBase58Address(getToAddress(txParams))
   const {
     conversionRate,
     identities,
@@ -63,7 +63,7 @@ const mapStateToProps = (state, props) => {
   const assetImage = assetImages[txParamsToAddress]
   const { balance } = accounts[selectedAddress]
   const { name: fromName } = identities[selectedAddress]
-  const toAddress = getBase58Address(propsToAddress || txParamsToAddress)
+  const toAddress = propsToAddress || txParamsToAddress
   const toName = identities[toAddress]
     ? identities[toAddress].name
     : casedContractMap[toAddress] ? casedContractMap[toAddress].name : addressSlicer(toAddress)
