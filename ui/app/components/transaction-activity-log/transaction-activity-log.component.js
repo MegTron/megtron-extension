@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { getActivities } from './transaction-activity-log.util'
 import Card from '../card'
-import { getEthConversionFromWeiHex, getValueFromWeiHex } from '../../helpers/conversions.util'
+import { getValueFromSunHex } from '../../helpers/conversions.util'
 import { TRX } from '../../constants/common'
 import { formatDate } from '../../util'
 
@@ -44,13 +44,13 @@ export default class TransactionActivityLog extends PureComponent {
     const { conversionRate } = this.props
     const { eventKey, value, timestamp } = activity
     const ethValue = index === 0
-      ? `${getValueFromWeiHex({
+      ? `${getValueFromSunHex({
         value,
         toCurrency: TRX,
         conversionRate,
         numberOfDecimals: 6,
       })} ${TRX}`
-      : getEthConversionFromWeiHex({ value, toCurrency: TRX, conversionRate })
+      : getValueFromSunHex({ value, toCurrency: TRX, conversionRate })
     const formattedTimestamp = formatDate(timestamp)
     const activityText = this.context.t(eventKey, [ethValue, formattedTimestamp])
 

@@ -1,3 +1,5 @@
+const { getTxParamsAmount } = require('../../helpers/transactions.util')
+
 // path constants
 const STATUS_PATH = '/status'
 const GAS_PRICE_PATH = '/txParams/gasPrice'
@@ -44,7 +46,8 @@ export function getActivities (transaction) {
   return history.reduce((acc, base) => {
     // First history item should be transaction creation
     if (!Array.isArray(base) && base.status === UNAPPROVED_STATUS && base.txParams) {
-      const { time, txParams: { value } = {} } = base
+      const { time, txParams } = base
+      const value = '0x' + getTxParamsAmount(txParams).toString(16)
       return acc.concat(eventCreator(TRANSACTION_CREATED_EVENT, time, value))
       // An entry in the history may be an array of more sub-entries.
     } else if (Array.isArray(base)) {

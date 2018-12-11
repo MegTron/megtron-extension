@@ -6,6 +6,7 @@ import TransactionActivityLog from '../transaction-activity-log'
 import TransactionBreakdown from '../transaction-breakdown'
 import Button from '../button'
 import Tooltip from '../tooltip'
+import { getBase58Address, getTxParamsFromAddress, getTxParamsToAddress } from '../../helpers/transactions.util'
 import getTxLink from '../../../lib/tx-link'
 
 export default class TransactionListItemDetails extends PureComponent {
@@ -45,8 +46,9 @@ export default class TransactionListItemDetails extends PureComponent {
   render () {
     const { t } = this.context
     const { transaction, showCancel, showRetry } = this.props
-    const { txParams: { to, from } = {} } = transaction
-
+    const { txParams } = transaction
+    const to = getBase58Address(getTxParamsToAddress(txParams))
+    const from = getBase58Address(getTxParamsFromAddress(txParams))
     return (
       <div className="transaction-list-item-details">
         <div className="transaction-list-item-details__header">
@@ -74,7 +76,7 @@ export default class TransactionListItemDetails extends PureComponent {
                 </Button>
               )
             }
-            <Tooltip title={t('viewOnEtherscan')}>
+            <Tooltip title={t('viewOnTronscan')}>
               <Button
                 type="raised"
                 onClick={this.handleEtherscanClick}

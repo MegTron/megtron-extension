@@ -11,7 +11,7 @@ import { CONFIRM_TRANSACTION_ROUTE } from '../../routes'
 import { UNAPPROVED_STATUS, TOKEN_METHOD_TRANSFER } from '../../constants/transactions'
 import { PRIMARY, SECONDARY } from '../../constants/common'
 import { ENVIRONMENT_TYPE_FULLSCREEN } from '../../../../app/scripts/lib/enums'
-import { getStatusKey } from '../../helpers/transactions.util'
+import { getStatusKey, getTxParamsAmount } from '../../helpers/transactions.util'
 
 export default class TransactionListItem extends PureComponent {
   static propTypes = {
@@ -92,7 +92,10 @@ export default class TransactionListItem extends PureComponent {
   }
 
   renderPrimaryCurrency () {
-    const { token, transaction: { txParams: { data } = {} } = {}, value } = this.props
+    const { token, transaction: { txParams } = {} } = this.props
+    // TODO(MegTron): get data from txParams.
+    const data = undefined
+    const value = '0x' + getTxParamsAmount(txParams).toString(16)
 
     return token
       ? (
@@ -113,7 +116,8 @@ export default class TransactionListItem extends PureComponent {
   }
 
   renderSecondaryCurrency () {
-    const { token, value } = this.props
+    const { token, transaction: { txParams } = {} } = this.props
+    const value = '0x' + getTxParamsAmount(txParams).toString(16)
 
     return token
       ? null

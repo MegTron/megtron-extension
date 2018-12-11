@@ -3,12 +3,9 @@ import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import TransactionBreakdownRow from './transaction-breakdown-row'
 import Card from '../card'
-import CurrencyDisplay from '../currency-display'
 import UserPreferencedCurrencyDisplay from '../user-preferenced-currency-display'
-import HexToDecimal from '../hex-to-decimal'
-import { ETH, GWEI, PRIMARY, SECONDARY } from '../../constants/common'
-import { getHexGasTotal } from '../../helpers/confirm-transaction/util'
-import { sumHexes } from '../../helpers/transactions.util'
+import { PRIMARY, SECONDARY } from '../../constants/common'
+import { getTxParamsAmount } from '../../helpers/transactions.util'
 
 export default class TransactionBreakdown extends PureComponent {
   static contextTypes = {
@@ -27,12 +24,10 @@ export default class TransactionBreakdown extends PureComponent {
   render () {
     const { t } = this.context
     const { transaction, className } = this.props
-    const { txParams: { gas, gasPrice, value } = {}, txReceipt: { gasUsed } = {} } = transaction
-
-    const gasLimit = typeof gasUsed === 'string' ? gasUsed : gas
-
-    const hexGasTotal = getHexGasTotal({ gasLimit, gasPrice })
-    const totalInHex = sumHexes(hexGasTotal, value)
+    const { txParams } = transaction
+    const value = '0x' + getTxParamsAmount(txParams).toString(16)
+    // TODO(MegTron): add gas usage for smart contract
+    const totalInHex = value
 
     return (
       <div className={classnames('transaction-breakdown', className)}>
@@ -45,37 +40,6 @@ export default class TransactionBreakdown extends PureComponent {
               className="transaction-breakdown__value"
               type={PRIMARY}
               value={value}
-            />
-          </TransactionBreakdownRow>
-          <TransactionBreakdownRow
-            title={`${t('gasLimit')} (${t('units')})`}
-            className="transaction-breakdown__row-title"
-          >
-            <HexToDecimal
-              className="transaction-breakdown__value"
-              value={gas}
-            />
-          </TransactionBreakdownRow>
-          {
-            typeof gasUsed === 'string' && (
-              <TransactionBreakdownRow
-                title={`${t('gasUsed')} (${t('units')})`}
-                className="transaction-breakdown__row-title"
-              >
-                <HexToDecimal
-                  className="transaction-breakdown__value"
-                  value={gasUsed}
-                />
-              </TransactionBreakdownRow>
-            )
-          }
-          <TransactionBreakdownRow title={t('gasPrice')}>
-            <CurrencyDisplay
-              className="transaction-breakdown__value"
-              currency={ETH}
-              denomination={GWEI}
-              value={gasPrice}
-              hideLabel
             />
           </TransactionBreakdownRow>
           <TransactionBreakdownRow title={t('total')}>

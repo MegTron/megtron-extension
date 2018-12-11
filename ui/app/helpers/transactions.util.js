@@ -58,15 +58,30 @@ export function getHexAddress (address) {
   return TronWeb.address.toHex(address)
 }
 
+// deprecated
 export function getFromAddress (txParams) {
   return txParams.owner_address || txParams.raw_data.contract[0].parameter.value.owner_address
 }
 
+// deprecated
 export function getToAddress (txParams) {
   return txParams.to_address || txParams.raw_data.contract[0].parameter.value.to_address
 }
 
+// deprecated
 export function getContractType (txParams) {
+  return txParams.raw_data.contract[0].type
+}
+
+export function getTxParamsFromAddress (txParams) {
+  return txParams.owner_address || txParams.raw_data.contract[0].parameter.value.owner_address
+}
+
+export function getTxParamsToAddress (txParams) {
+  return txParams.to_address || txParams.raw_data.contract[0].parameter.value.to_address
+}
+
+export function getTxParamsContractType (txParams) {
   return txParams.raw_data.contract[0].type
 }
 
