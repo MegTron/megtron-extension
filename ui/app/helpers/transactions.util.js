@@ -49,6 +49,9 @@ export function getBase58Address (address) {
 }
 
 export function getHexAddress (address) {
+  if (!address) {
+    return address
+  }
   if (address.length === 44 && address.indexOf('0x') === 0) {
     address = address.slice(2)
   }
