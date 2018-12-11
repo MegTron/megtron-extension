@@ -31,22 +31,20 @@ export default class TransactionConfirmed extends PureComponent {
   render () {
     const { t } = this.context
     const { transaction, showRetry, onCancel, showCancel } = this.props
-    const { txParams: { nonce } = {} } = transaction
-    const decimalNonce = nonce && hexToDecimal(nonce)
 
     return (
       <Modal
         onSubmit={this.handleSubmit}
         onClose={this.handleSubmit}
         submitText={t('ok')}
-        headerText={t('transactionWithNonce', [`#${decimalNonce}`])}
+        headerText={t('transaction')}
       >
         <TransactionListItemDetails
           transaction={transaction}
           onRetry={this.handleRetry}
-          showRetry={showRetry}
+          showRetry={false && showRetry}
           onCancel={() => onCancel()}
-          showCancel={showCancel}
+          showCancel={false && showCancel}
         />
       </Modal>
     )

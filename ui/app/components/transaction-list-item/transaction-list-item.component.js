@@ -191,9 +191,9 @@ export default class TransactionListItem extends PureComponent {
                 <TransactionListItemDetails
                   transaction={transaction}
                   onRetry={this.handleRetry}
-                  showRetry={showRetry && methodData.done}
+                  showRetry={false && showRetry && methodData.done}
                   onCancel={this.handleCancel}
-                  showCancel={showCancel}
+                  showCancel={false && showCancel}
                 />
               </div>
             )
