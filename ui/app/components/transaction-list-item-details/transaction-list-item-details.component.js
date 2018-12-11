@@ -6,7 +6,7 @@ import TransactionActivityLog from '../transaction-activity-log'
 import TransactionBreakdown from '../transaction-breakdown'
 import Button from '../button'
 import Tooltip from '../tooltip'
-import prefixForNetwork from '../../../lib/etherscan-prefix-for-network'
+import getTxLink from '../../../lib/tx-link'
 
 export default class TransactionListItemDetails extends PureComponent {
   static contextTypes = {
@@ -22,11 +22,9 @@ export default class TransactionListItemDetails extends PureComponent {
   }
 
   handleEtherscanClick = () => {
-    const { hash, metamaskNetworkId } = this.props.transaction
-
-    const prefix = prefixForNetwork(metamaskNetworkId)
-    const etherscanUrl = `https://${prefix}etherscan.io/tx/${hash}`
-    global.platform.openWindow({ url: etherscanUrl })
+    const { rawTx: { txID: hash } = {}, metamaskNetworkId } = this.props.transaction
+    const txUrl = getTxLink(hash, metamaskNetworkId)
+    global.platform.openWindow({ url: txUrl })
     this.setState({ showTransactionDetails: true })
   }
 
