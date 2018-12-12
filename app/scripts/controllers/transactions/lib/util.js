@@ -1,7 +1,7 @@
 const {
   addHexPrefix,
-  isValidAddress,
 } = require('ethereumjs-util')
+const TronWeb = require('tronweb')
 
 /**
 @module
@@ -12,6 +12,10 @@ module.exports = {
   validateFrom,
   validateRecipient,
   getFinalStates,
+  getTxParamsFromAddress,
+  getTxParamsToAddress,
+  getBase58Address,
+  getHexAddress,
 }
 
 
@@ -32,12 +36,62 @@ const normalizers = {
   @returns {object} normalized txParams
  */
 function normalizeTxParams (txParams) {
+  console.error('MegTron.deprecated.normalizeTxParams', { txParams })
+  console.trace()
   // apply only keys in the normalizers
   const normalizedTxParams = {}
   for (const key in normalizers) {
     if (txParams[key]) normalizedTxParams[key] = normalizers[key](txParams[key])
   }
   return normalizedTxParams
+}
+
+function getBase58Address (address) {
+  if (!address) {
+    return address
+  }
+  return TronWeb.address.fromHex(address)
+}
+
+function getHexAddress (address) {
+  if (!address) {
+    return address
+  }
+  if (address.length === 44 && address.indexOf('0x') === 0) {
+    address = address.slice(2)
+  }
+  if (address.length === 42 && address.indexOf('41') === 0) {
+    return address
+  }
+  return TronWeb.address.toHex(address)
+}
+
+/**
+ * Get the from address
+ * @param {object} txParams
+ * @returns {string} from address
+ */
+function getTxParamsFromAddress (txParams) {
+  if (txParams.owner_address) {
+    return txParams.owner_address
+  }
+  if (txParams.raw_data) {
+    return txParams.raw_data.contract[0].parameter.value.owner_address
+  }
+}
+
+/**
+ * Get the to address
+ * @param {object} txParams
+ * @returns {string} from address
+ */
+function getTxParamsToAddress (txParams) {
+  if (txParams.to_address) {
+    return txParams.to_address
+  }
+  if (txParams.raw_data) {
+    return txParams.raw_data.contract[0].parameter.value.to_address
+  }
 }
 
  /**
@@ -47,39 +101,25 @@ function normalizeTxParams (txParams) {
 function validateTxParams (txParams) {
   validateFrom(txParams)
   validateRecipient(txParams)
-  if ('value' in txParams) {
-    const value = txParams.value.toString()
-    if (value.includes('-')) {
-      throw new Error(`Invalid transaction value of ${txParams.value} not a positive number.`)
-    }
-
-    if (value.includes('.')) {
-      throw new Error(`Invalid transaction value of ${txParams.value} number must be in wei`)
-    }
-  }
 }
 
  /**
-  validates the from field in  txParams
+  validates the from field in txParams
   @param txParams {object}
  */
 function validateFrom (txParams) {
-  if (!(typeof txParams.from === 'string')) throw new Error(`Invalid from address ${txParams.from} not a string`)
-  if (!isValidAddress(txParams.from)) throw new Error('Invalid from address')
+  const fromAddress = getTxParamsFromAddress(txParams)
+  if (!(typeof fromAddress === 'string')) throw new Error(`Invalid from address ${fromAddress} not a string`)
+  if (!isValidHexAddress(fromAddress)) throw new Error('Invalid owner_address')
 }
 
  /**
-  validates the to field in  txParams
+  validates the to field in txParams
   @param txParams {object}
  */
 function validateRecipient (txParams) {
-  if (txParams.to === '0x' || txParams.to === null) {
-    if (txParams.data) {
-      delete txParams.to
-    } else {
-      throw new Error('Invalid recipient address')
-    }
-  } else if (txParams.to !== undefined && !isValidAddress(txParams.to)) {
+  const toAddress = getTxParamsToAddress(txParams)
+  if (toAddress !== undefined && !isValidHexAddress(txParams.to_address)) {
     throw new Error('Invalid recipient address')
   }
   return txParams
@@ -95,5 +135,15 @@ function getFinalStates () {
     'failed', // the tx failed for some reason, included on tx data.
     'dropped', // the tx nonce was already used
   ]
+}
+
+function isValidHexAddress (address) {
+  if (address.length !== 42) {
+    throw new Error(`Invalid address ${address}: length should be 42`)
+  }
+  if (address.slice(0, 2) !== '41')  {
+    throw new Error(`Invalid address ${address}: should start with 0x41`)
+  }
+  return true
 }
 
