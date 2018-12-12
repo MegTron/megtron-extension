@@ -61,21 +61,6 @@ export function getHexAddress (address) {
   return TronWeb.address.toHex(address)
 }
 
-// deprecated
-export function getFromAddress (txParams) {
-  return txParams.owner_address || txParams.raw_data.contract[0].parameter.value.owner_address
-}
-
-// deprecated
-export function getToAddress (txParams) {
-  return txParams.to_address || txParams.raw_data.contract[0].parameter.value.to_address
-}
-
-// deprecated
-export function getContractType (txParams) {
-  return txParams.raw_data.contract[0].type
-}
-
 export function getTxParamsFromAddress (txParams) {
   return txParams.owner_address || txParams.raw_data.contract[0].parameter.value.owner_address
 }
@@ -94,7 +79,7 @@ export function getTxParamsAmount (txParams) {
 
 export function isConfirmDeployContract (txData = {}) {
   const { txParams = {} } = txData
-  return getContractType(txParams) === CONTRACT_TYPE_CREATE_SMART_CONTRACT
+  return getTxParamsContractType(txParams) === CONTRACT_TYPE_CREATE_SMART_CONTRACT
 }
 
 /**

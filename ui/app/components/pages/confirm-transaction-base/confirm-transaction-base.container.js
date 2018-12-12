@@ -18,7 +18,7 @@ import { isBalanceSufficient } from '../../send/send.utils'
 import { conversionGreaterThan } from '../../../conversion-util'
 import { MIN_GAS_LIMIT_DEC } from '../../send/send.constants'
 import { addressSlicer, valuesFor } from '../../../util'
-import { getToAddress, getFromAddress, getBase58Address } from '../../../helpers/transactions.util'
+import { getTxParamsToAddress, getTxParamsFromAddress, getBase58Address } from '../../../helpers/transactions.util'
 
 const casedContractMap = Object.keys(contractMap).reduce((acc, base) => {
   return {
@@ -47,8 +47,8 @@ const mapStateToProps = (state, props) => {
     nonce,
   } = confirmTransaction
   const { txParams = {}, lastGasPrice, id: transactionId } = txData
-  const fromAddress = getBase58Address(getFromAddress(txParams))
-  const txParamsToAddress = getBase58Address(getToAddress(txParams))
+  const fromAddress = getBase58Address(getTxParamsFromAddress(txParams))
+  const txParamsToAddress = getBase58Address(getTxParamsToAddress(txParams))
   const {
     conversionRate,
     identities,

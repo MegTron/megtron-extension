@@ -11,7 +11,7 @@ const TronQuery = require('./tron-query')
 const ObservableStore = require('obs-store')
 const log = require('loglevel')
 const pify = require('pify')
-const { base58ToHexString, hexStringToBase58 } = require('tron-keyring-controller')
+const { getHexAddress, getBase58Address } = require('../controllers/transactions/lib/util')
 const intToHex = require('ethereumjs-util').intToHex
 
 
@@ -173,7 +173,7 @@ class AccountTracker {
     if (!this._assetAddressMap[assetKey]) {
       const value = Buffer.from(assetKey).toString('hex')
       const assetInfoResult = await this._query.assetIssueByName({ value })
-      this._assetAddressMap[assetKey] = hexStringToBase58(assetInfoResult.owner_address)
+      this._assetAddressMap[assetKey] = getBase58Address(assetInfoResult.owner_address)
     }
     return this._assetAddressMap[assetKey]
   }
@@ -188,7 +188,7 @@ class AccountTracker {
    */
   async _updateAccount (address) {
     // query balance
-    const balanceResult = await this._query.getBalance({ address: base58ToHexString(address) })
+    const balanceResult = await this._query.getBalance({ address: getHexAddress(address) })
     const balanceNum = balanceResult.balance || 0
     const balance = intToHex(balanceNum)
     const asset = balanceResult.asset || []

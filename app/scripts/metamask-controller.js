@@ -52,7 +52,7 @@ const LedgerBridgeKeyring = require('eth-ledger-bridge-keyring')
 const TronQuery = require('./lib/tron-query')
 const ethUtil = require('ethereumjs-util')
 const sigUtil = require('eth-sig-util')
-const { base58ToHexString } = require('tron-keyring-controller')
+const { getHexAddress } = require('./controllers/transactions/lib/util')
 
 module.exports = class MetamaskController extends EventEmitter {
 
@@ -535,7 +535,7 @@ module.exports = class MetamaskController extends EventEmitter {
       } else {
         // TODO(MegTron): remove comment
         console.log('MegTron.metamask-controller.getBalance', {address})
-        tronQuery.getBalance({ address: base58ToHexString(address) }, (error, accountResponse) => {
+        tronQuery.getBalance({ address: getHexAddress(address) }, (error, accountResponse) => {
           if (error) {
             reject(error)
             log.error(error)

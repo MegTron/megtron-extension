@@ -2,11 +2,12 @@ const EventEmitter = require('events')
 const ObservableStore = require('obs-store')
 const ethUtil = require('ethereumjs-util')
 const Transaction = require('ethereumjs-tx')
-const EthQuery = require('ethjs-query')
+const TronQuery = require('../../lib/tron-query')
 const TransactionStateManager = require('./tx-state-manager')
 const PendingTransactionTracker = require('./pending-tx-tracker')
 const NonceTracker = require('./nonce-tracker')
 const txUtils = require('./lib/util')
+const pify = require('pify')
 const cleanErrorStack = require('../../lib/cleanErrorStack')
 const log = require('loglevel')
 const recipientBlacklistChecker = require('./lib/recipient-blacklist-checker')
@@ -38,7 +39,6 @@ const { hexToBn, bnToHex, BnMultiplyByFraction } = require('../../lib/util')
   @param {Object}  opts.networkStore - an observable store for network number
   @param {Object}  opts.blockTracker - An instance of eth-blocktracker
   @param {Object}  opts.provider - A network provider.
-  @param {Function}  opts.signTransaction - function the signs an ethereumjs-tx
   @param {Function}  [opts.getGasPrice] - optional gas price calculator
   @param {Function}  opts.signTransaction - ethTx signer that returns a rawTx
   @param {Number}  [opts.txHistoryLimit] - number *optional* for limiting how many transactions are in state
@@ -52,11 +52,11 @@ class TransactionController extends EventEmitter {
     this.preferencesStore = opts.preferencesStore || new ObservableStore({})
     this.provider = opts.provider
     this.blockTracker = opts.blockTracker
-    this.signEthTx = opts.signTransaction
+    this.signTransaction = opts.signTransaction
     this.getGasPrice = opts.getGasPrice
 
     this.memStore = new ObservableStore({})
-    this.query = new EthQuery(this.provider)
+    this.query = pify(new TronQuery(this.provider))
 
     this._mapMethods()
     this.txStateManager = new TransactionStateManager({
@@ -77,7 +77,7 @@ class TransactionController extends EventEmitter {
     this.pendingTxTracker = new PendingTransactionTracker({
       provider: this.provider,
       nonceTracker: this.nonceTracker,
-      publishTransaction: (rawTx) => this.query.sendRawTransaction(rawTx),
+      publishTransaction: (rawTx) => this.query.broadcastTransaction({...rawTx}),
       getPendingTransactions: this.txStateManager.getPendingTransactions.bind(this.txStateManager),
       getCompletedTransactions: this.txStateManager.getConfirmedTransactions.bind(this.txStateManager),
     })
@@ -92,6 +92,8 @@ class TransactionController extends EventEmitter {
 
     // request state update to finalize initialization
     this._updatePendingTxsAfterFirstBlock()
+    const l = this.txStateManager.getTxList()
+    console.log('MegTron.TransactionController.ctor', { l })
   }
 
   /** @returns {number} the chainId*/
@@ -131,16 +133,18 @@ class TransactionController extends EventEmitter {
   */
 
   async newUnapprovedTransaction (txParams, opts = {}) {
-    log.debug(`MetaMaskController newUnapprovedTransaction ${JSON.stringify(txParams)}`)
+    log.debug(`MegTronController newUnapprovedTransaction ${JSON.stringify(txParams)}`)
+    log.debug(`MegTron.txController.newUnapprovedTransaction`, {txParams})
     const initialTxMeta = await this.addUnapprovedTransaction(txParams)
     initialTxMeta.origin = opts.origin
     this.txStateManager.updateTx(initialTxMeta, '#newUnapprovedTransaction - adding the origin')
     // listen for tx completion (success, fail)
     return new Promise((resolve, reject) => {
       this.txStateManager.once(`${initialTxMeta.id}:finished`, (finishedTxMeta) => {
+        console.log('MegTron.transaction.index.js.newUnapprovedTransaction', { finishedTxMeta })
         switch (finishedTxMeta.status) {
           case 'submitted':
-            return resolve(finishedTxMeta.hash)
+            return resolve(finishedTxMeta.rawTx)
           case 'rejected':
             return reject(cleanErrorStack(new Error('MetaMask Tx Signature: User denied transaction signature.')))
           case 'failed':
@@ -160,31 +164,21 @@ class TransactionController extends EventEmitter {
   */
 
   async addUnapprovedTransaction (txParams) {
-    // validate
-    const normalizedTxParams = txUtils.normalizeTxParams(txParams)
+    console.log('MegTron.TransactionController.index.addUnapprovedTransaction', { txParams })
     // Assert the from address is the selected address
-    if (normalizedTxParams.from !== this.getSelectedAddress()) {
+    if (txUtils.getTxParamsFromAddress(txParams) !== txUtils.getHexAddress(this.getSelectedAddress())) {
+      console.error(`Transaction from address isn't valid for this account`)
       throw new Error(`Transaction from address isn't valid for this account`)
     }
-    txUtils.validateTxParams(normalizedTxParams)
+    txUtils.validateTxParams(txParams)
     // construct txMeta
     let txMeta = this.txStateManager.generateTxMeta({
-      txParams: normalizedTxParams,
+      txParams: txParams,
       type: TRANSACTION_TYPE_STANDARD,
     })
     this.addTx(txMeta)
     this.emit('newUnapprovedTx', txMeta)
 
-    try {
-      // check whether recipient account is blacklisted
-      recipientBlacklistChecker.checkAccount(txMeta.metamaskNetworkId, normalizedTxParams.to)
-      // add default tx params
-      txMeta = await this.addTxGasDefaults(txMeta)
-    } catch (error) {
-      log.warn(error)
-      this.txStateManager.setTxStatusFailed(txMeta.id, error)
-      throw error
-    }
     txMeta.loadingDefaults = false
     // save txMeta
     this.txStateManager.updateTx(txMeta)
@@ -197,6 +191,8 @@ class TransactionController extends EventEmitter {
   @returns {Promise<object>} resolves with txMeta
 */
   async addTxGasDefaults (txMeta) {
+    return {}
+    /*
     const txParams = txMeta.txParams
     // ensure value
     txParams.value = txParams.value ? ethUtil.addHexPrefix(txParams.value) : '0x0'
@@ -207,6 +203,7 @@ class TransactionController extends EventEmitter {
     }
     txParams.gasPrice = ethUtil.addHexPrefix(gasPrice.toString(16))
     return {}
+    */
   }
 
   /**
@@ -270,6 +267,7 @@ class TransactionController extends EventEmitter {
   @param txMeta {Object} - the updated txMeta
   */
   async updateTransaction (txMeta) {
+    console.log('MegTron.transaction.index.updateTransaction', {txMeta})
     this.txStateManager.updateTx(txMeta, 'confTx: user updated transaction')
   }
 
@@ -284,35 +282,29 @@ class TransactionController extends EventEmitter {
 
   /**
   sets the tx status to approved
-  auto fills the nonce
   signs the transaction
   publishes the transaction
   if any of these steps fails the tx status will be set to failed
     @param txId {number} - the tx's Id
   */
   async approveTransaction (txId) {
-    let nonceLock
+    console.log('MegTron.transaction.index.approveTransactions', {txId})
     try {
+      console.log('MegTron.transaction.index.approveTransactions', 'start')
       // approve
       this.txStateManager.setTxStatusApproved(txId)
+      console.log('MegTron.transaction.index.approveTransactions', 'after set approved')
       // get next nonce
       const txMeta = this.txStateManager.getTx(txId)
-      const fromAddress = txMeta.txParams.from
-      // wait for a nonce
-      nonceLock = await this.nonceTracker.getNonceLock(fromAddress)
-      // add nonce to txParams
-      // if txMeta has lastGasPrice then it is a retry at same nonce with higher
-      // gas price transaction and their for the nonce should not be calculated
-      const nonce = txMeta.lastGasPrice ? txMeta.txParams.nonce : nonceLock.nextNonce
-      txMeta.txParams.nonce = ethUtil.addHexPrefix(nonce.toString(16))
-      // add nonce debugging information to txMeta
-      txMeta.nonceDetails = nonceLock.nonceDetails
       this.txStateManager.updateTx(txMeta, 'transactions#approveTransaction')
       // sign transaction
-      const rawTx = await this.signTransaction(txId)
+      console.log('MegTron.transaction.index.approveTransactions', 'before sign')
+      console.log('MegTron.transaction.index.approveTransactions', 'before sign')
+      console.log('MegTron.transaction.index.approveTransactions', 'before sign')
+      const rawTx = await this.signTx(txId)
+      console.log('MegTron.transaction.index.approveTransactions', 'before publish')
       await this.publishTransaction(txId, rawTx)
-      // must set transaction to submitted/failed before releasing lock
-      nonceLock.releaseLock()
+      console.log('MegTron.transaction.index.approveTransactions', 'after publish')
     } catch (err) {
       // this is try-catch wrapped so that we can guarantee that the nonceLock is released
       try {
@@ -320,8 +312,6 @@ class TransactionController extends EventEmitter {
       } catch (err) {
         log.error(err)
       }
-      // must set transaction to submitted/failed before releasing lock
-      if (nonceLock) nonceLock.releaseLock()
       // continue with error chain
       throw err
     }
@@ -331,19 +321,20 @@ class TransactionController extends EventEmitter {
     @param txId {number} - the tx's Id
     @returns - rawTx {string}
   */
-  async signTransaction (txId) {
+  async signTx(txId) {
+    console.log('MegTron.transaction.index.signTransaction', { txId })
     const txMeta = this.txStateManager.getTx(txId)
-    // add network/chain id
-    const chainId = this.getChainId()
-    const txParams = Object.assign({}, txMeta.txParams, { chainId })
+    const txParams = Object.assign({}, txMeta.txParams)
+    console.log('MegTron.transaction.index.signTransaction', { txMeta, txParams })
     // sign tx
-    const fromAddress = txParams.from
-    const ethTx = new Transaction(txParams)
-    await this.signEthTx(ethTx, fromAddress)
+    const fromAddress = txUtils.getBase58Address(txUtils.getTxParamsFromAddress(txParams))
+    const ethTx = txParams
+    console.log('MegTron.transaction.index.signTransaction.beforeSign', { ethTx, fromAddress })
+    const tx = await this.signTransaction(ethTx, fromAddress)
     // set state to signed
     this.txStateManager.setTxStatusSigned(txMeta.id)
-    const rawTx = ethUtil.bufferToHex(ethTx.serialize())
-    return rawTx
+    console.log('MegTron.transaction.index.signTransaction.signed', { tx })
+    return tx
   }
 
   /**
@@ -356,7 +347,7 @@ class TransactionController extends EventEmitter {
     const txMeta = this.txStateManager.getTx(txId)
     txMeta.rawTx = rawTx
     this.txStateManager.updateTx(txMeta, 'transactions#publishTransaction')
-    const txHash = await this.query.sendRawTransaction(rawTx)
+    const txHash = await this.query.broadcastTransaction({...rawTx})
     this.setTxHash(txId, txHash)
     this.txStateManager.setTxStatusSubmitted(txId)
   }
@@ -396,7 +387,6 @@ class TransactionController extends EventEmitter {
     }
 
     this.txStateManager.setTxStatusConfirmed(txId)
-    this._markNonceDuplicatesDropped(txId)
   }
 
   /**
@@ -503,27 +493,6 @@ class TransactionController extends EventEmitter {
     })
   }
 
-  /**
-    Sets other txMeta statuses to dropped if the txMeta that has been confirmed has other transactions
-    in the list have the same nonce
-
-    @param txId {Number} - the txId of the transaction that has been confirmed in a block
-  */
-  _markNonceDuplicatesDropped (txId) {
-    // get the confirmed transactions nonce and from address
-    const txMeta = this.txStateManager.getTx(txId)
-    const { nonce, from } = txMeta.txParams
-    const sameNonceTxs = this.txStateManager.getFilteredTxList({nonce, from})
-    if (!sameNonceTxs.length) return
-    // mark all same nonce transactions as dropped and give i a replacedBy hash
-    sameNonceTxs.forEach((otherTxMeta) => {
-      if (otherTxMeta.id === txId) return
-      otherTxMeta.replacedBy = txMeta.hash
-      this.txStateManager.updateTx(txMeta, 'transactions/pending-tx-tracker#event: tx:confirmed reference to confirmed txHash with same nonce')
-      this.txStateManager.setTxStatusDropped(otherTxMeta.id)
-    })
-  }
-
   _setupBlockTrackerListener () {
     let listenersAreActive = false
     const latestBlockHandler = this._onLatestBlock.bind(this)
@@ -564,10 +533,13 @@ class TransactionController extends EventEmitter {
   _updateMemstore () {
     this.pendingTxTracker.updatePendingTxs()
     const unapprovedTxs = this.txStateManager.getUnapprovedTxList()
+    const before = this.txStateManager.getTxList()
+    console.log('MegTron.TransactionController.updateMemstore', { before })
     const selectedAddressTxList = this.txStateManager.getFilteredTxList({
-      from: this.getSelectedAddress(),
+      owner_address: txUtils.getHexAddress(this.getSelectedAddress()),
       metamaskNetworkId: this.getNetwork(),
     })
+    console.log('MegTron.TransactionController.updateMemstore', { before, selectedAddressTxList })
     this.memStore.updateState({ unapprovedTxs, selectedAddressTxList })
   }
 }

@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom'
 import { updateSend } from '../../../actions'
 import { clearConfirmTransaction } from '../../../ducks/confirm-transaction.duck'
 import ConfirmSendEther from './confirm-send-ether.component'
+import { getBase58Address, getTxParamsToAddress, getTxParamsAmount } from '../../../helpers/transactions.util'
 
 const mapStateToProps = state => {
   const { confirmTransaction: { txData: { txParams } = {} } } = state
@@ -20,16 +21,14 @@ const mapDispatchToProps = dispatch => {
       const {
         gas: gasLimit,
         gasPrice,
-        to,
-        value: amount,
       } = txParams
 
       dispatch(updateSend({
         gasLimit,
         gasPrice,
         gasTotal: null,
-        to,
-        amount,
+        to: getBase58Address(getTxParamsToAddress(txParams)),
+        amount: getTxParamsAmount(txParams).toString(16),
         errors: { to: null, amount: null },
         editingTransactionId: id && id.toString(),
       }))

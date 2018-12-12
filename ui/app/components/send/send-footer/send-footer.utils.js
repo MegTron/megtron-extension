@@ -1,6 +1,8 @@
 const ethAbi = require('ethereumjs-abi')
 const ethUtil = require('ethereumjs-util')
 const { TOKEN_TRANSFER_FUNCTION_SIGNATURE } = require('../send.constants')
+const { getHexAddress } = require('../../../helpers/transactions.util')
+const BigNumber = require('bignumber.js')
 
 function addHexPrefixToObjectValues (obj) {
   return Object.keys(obj).reduce((newObj, key) => {
@@ -23,6 +25,22 @@ function constructTxParams ({ selectedToken, data, to, amount, from, gas, gasPri
   }
 
   return addHexPrefixToObjectValues(txParams)
+}
+
+/* Construct Tron Tx Params
+*
+* @param {string} to the base58 form of destination address.
+* @param {string} amount the hex rep of SUN
+* @param {string} from the base58 form of origin address.
+* @returns {Object} the Tx Params
+*/
+function constructTronTxParams ({ to, amount, from }) {
+  // TODO: support token
+  return {
+    to_address: getHexAddress(to),
+    owner_address: getHexAddress(from),
+    amount: new BigNumber(amount, 16).toNumber(),
+  }
 }
 
 function constructUpdatedTx ({
@@ -80,6 +98,7 @@ function addressIsNew (toAccounts, newAddress) {
 module.exports = {
   addressIsNew,
   constructTxParams,
+  constructTronTxParams,
   constructUpdatedTx,
   addHexPrefixToObjectValues,
 }
