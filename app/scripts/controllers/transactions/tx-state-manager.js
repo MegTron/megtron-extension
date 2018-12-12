@@ -162,6 +162,7 @@ class TransactionStateManager extends EventEmitter {
     @param [note] {string} - a note about the update for history
   */
   updateTx (txMeta, note) {
+    console.log('MegTron.tx-state-manager.updateTx', { txMeta, note })
     // validate txParams
     if (txMeta.txParams) {
       if (typeof txMeta.txParams.data === 'undefined') {
@@ -205,19 +206,8 @@ class TransactionStateManager extends EventEmitter {
     @param txParams {object} - txParams to validate
   */
   validateTxParams (txParams) {
-    Object.keys(txParams).forEach((key) => {
-      const value = txParams[key]
-      // validate types
-      switch (key) {
-        case 'chainId':
-          if (typeof value !== 'number' && typeof value !== 'string') throw new Error(`${key} in txParams is not a Number or hex string. got: (${value})`)
-          break
-        default:
-          if (typeof value !== 'string') throw new Error(`${key} in txParams is not a string. got: (${value})`)
-          if (!ethUtil.isHexPrefixed(value)) throw new Error(`${key} in txParams is not hex prefixed. got: (${value})`)
-          break
-      }
-    })
+    // TODO(MegTron): add code to verify
+    return
   }
 
 /**
@@ -263,7 +253,9 @@ class TransactionStateManager extends EventEmitter {
   */
   getTxsByMetaData (key, value, txList = this.getTxList()) {
     return txList.filter((txMeta) => {
-      if (key in txMeta.txParams) {
+      if ('raw_data' in txMeta.txParams && key in txMeta.txParams.raw_data.contract[0].parameter.value) {
+        return txMeta.txParams.raw_data.contract[0].parameter.value[key] === value
+      } else if (key in txMeta.txParams) {
         return txMeta.txParams[key] === value
       } else {
         return txMeta[key] === value

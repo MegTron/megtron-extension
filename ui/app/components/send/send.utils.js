@@ -110,6 +110,8 @@ function getAmountErrorObject ({
   selectedToken,
   tokenBalance,
 }) {
+  return { amount: null }
+  /* TODO(MegTron): update fee model
   let insufficientFunds = false
   if (gasTotal && conversionRate && !selectedToken) {
     insufficientFunds = !isBalanceSufficient({
@@ -148,6 +150,7 @@ function getAmountErrorObject ({
   }
 
   return { amount: amountError }
+  */
 }
 
 function getGasFeeErrorObject ({

@@ -27,7 +27,8 @@ export default class SendToRow extends Component {
 
   handleToChange (to, nickname = '', toError) {
     const { hasHexData, updateSendTo, updateSendToError, updateGas } = this.props
-    const toErrorObject = getToErrorObject(to, toError, hasHexData)
+    // TODO(MegTron): check send to address issue
+    const toErrorObject = { to: null } // getToErrorObject(to, toError, hasHexData)
     updateSendTo(to, nickname)
     updateSendToError(toErrorObject)
     if (toErrorObject.to === null) {

@@ -886,13 +886,16 @@ function signTypedMsg (msgData) {
 }
 
 function signTx (txData) {
+  console.log('MegTron.actions.signTx', { txData })
   return (dispatch) => {
-    global.ethQuery.sendTransaction(txData, (err, data) => {
-      if (err) {
-        return dispatch(actions.displayWarning(err.message))
-      }
+    const transaction = {...txData}
+    global.tronQuery.getTransactionSign({ transaction }).then((data) => {
+      console.log('MegTron.actions.signTx', { data })
+      dispatch(actions.showConfTxPage)
+    }).catch((err) => {
+      console.log('MegTron.actions.signTx', { err })
+      dispatch(actions.displayWarning(err.message))
     })
-    dispatch(actions.showConfTxPage({}))
   }
 }
 
@@ -902,7 +905,6 @@ function setGasLimit (gasLimit) {
     value: gasLimit,
   }
 }
-
 function setGasPrice (gasPrice) {
   return {
     type: actions.UPDATE_GAS_PRICE,
@@ -927,43 +929,10 @@ function updateGasData ({
   data,
 }) {
   return (dispatch) => {
-    dispatch(actions.gasLoadingStarted())
-    return new Promise((resolve, reject) => {
-      background.getGasPrice((err, data) => {
-        if (err) return reject(err)
-        return resolve(data)
-      })
-    })
-    .then(estimateGasPrice => {
-      return Promise.all([
-        Promise.resolve(estimateGasPrice),
-        estimateGas({
-          estimateGasMethod: background.estimateGas,
-          blockGasLimit,
-          selectedAddress,
-          selectedToken,
-          to,
-          value,
-          estimateGasPrice,
-          data,
-        }),
-      ])
-    })
-    .then(([gasPrice, gas]) => {
-      dispatch(actions.setGasPrice(gasPrice))
-      dispatch(actions.setGasLimit(gas))
-      return calcGasTotal(gas, gasPrice)
-    })
-    .then((gasEstimate) => {
-      dispatch(actions.setGasTotal(gasEstimate))
-      dispatch(updateSendErrors({ gasLoadingError: null }))
-      dispatch(actions.gasLoadingFinished())
-    })
-    .catch(err => {
-      log.error(err)
-      dispatch(updateSendErrors({ gasLoadingError: 'gasLoadingError' }))
-      dispatch(actions.gasLoadingFinished())
-    })
+    dispatch(actions.setGasPrice('0'))
+    dispatch(actions.setGasLimit('0'))
+    dispatch(actions.setGasTotal('0'))
+    dispatch(updateSendErrors({ gasLoadingError: null }))
   }
 }
 

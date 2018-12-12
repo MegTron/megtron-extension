@@ -35,7 +35,6 @@ class RecentBlocksController {
     this.store = new ObservableStore(initState)
 
     this.blockTracker.on('latest', async (newBlockNumber) => {
-      console.log('MegTronRecentBlocksController.onLatest', {newBlockNumber})
       try {
         await this.processBlock(newBlockNumber)
       } catch (err) {
@@ -64,7 +63,6 @@ class RecentBlocksController {
    */
   async processBlock (newBlockNumber) {
     const newBlock = await this.getBlockByNumber(newBlockNumber)
-    console.log('MegTron.recent-blocks.processBlock', {newBlock})
     if (!newBlock) return
 
     const block = this.mapTransactionsToPrices(newBlock)

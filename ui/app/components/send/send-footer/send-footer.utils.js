@@ -11,6 +11,8 @@ function addHexPrefixToObjectValues (obj) {
 }
 
 function constructTxParams ({ selectedToken, data, to, amount, from, gas, gasPrice }) {
+  console.error('MegTron deprecated send-footer.utils.js constructTxParams')
+  console.trace()
   const txParams = {
     data,
     from,

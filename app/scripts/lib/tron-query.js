@@ -17,6 +17,7 @@ TronQuery.prototype.createTransaction = generateFnFor('wallet/createtransaction'
 TronQuery.prototype.broadcastTransaction = generateFnFor('wallet/broadcasttransaction')
 TronQuery.prototype.assetIssueByName = generateFnFor('wallet/getassetissuebyname')
 TronQuery.prototype.getTransactionInfoByID = generateFnFor('wallet/gettransactioninfobyid')
+TronQuery.prototype.getTransactionSign = generateFnFor('wallet/gettransactionsign')
 
 // network level
 TronQuery.prototype.sendAsync = function (opts, cb) {

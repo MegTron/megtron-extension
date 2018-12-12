@@ -1,5 +1,4 @@
 import { connect } from 'react-redux'
-import ethUtil from 'ethereumjs-util'
 import {
   addToAddressBook,
   clearSend,
@@ -27,9 +26,10 @@ import {
 } from './send-footer.selectors'
 import {
   addressIsNew,
-  constructTxParams,
   constructUpdatedTx,
 } from './send-footer.utils'
+
+import { getHexAddress } from '../../../helpers/transactions.util'
 
 export default connect(mapStateToProps, mapDispatchToProps)(SendFooter)
 
@@ -54,15 +54,11 @@ function mapStateToProps (state) {
 function mapDispatchToProps (dispatch) {
   return {
     clearSend: () => dispatch(clearSend()),
-    sign: ({ selectedToken, to, amount, from, gas, gasPrice, data }) => {
-      const txParams = constructTxParams({
-        amount,
-        data,
-        from,
-        gas,
-        gasPrice,
-        selectedToken,
-        to,
+    sign: async ({ selectedToken, to, amount, from }) => {
+      const txParams = await global.tronQuery.createTransaction({
+        amount: parseInt(amount, 16),
+        owner_address: getHexAddress(from),
+        to_address: getHexAddress(to),
       })
 
       selectedToken
@@ -95,10 +91,9 @@ function mapDispatchToProps (dispatch) {
       return dispatch(updateTransaction(editingTx))
     },
     addToAddressBookIfNew: (newAddress, toAccounts, nickname = '') => {
-      const hexPrefixedAddress = ethUtil.addHexPrefix(newAddress)
       if (addressIsNew(toAccounts)) {
         // TODO: nickname, i.e. addToAddressBook(recipient, nickname)
-        dispatch(addToAddressBook(hexPrefixedAddress, nickname))
+        dispatch(addToAddressBook(newAddress, nickname))
       }
     },
   }

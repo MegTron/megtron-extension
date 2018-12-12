@@ -859,6 +859,7 @@ module.exports = class MetamaskController extends EventEmitter {
    * @param {Object} req - (optional) the original request, containing the origin
    */
   async newUnapprovedTransaction (txParams, req) {
+    console.log('MegTron.metamask-controller.newUnapprovedTransaction', { txParams, req })
     return await this.txController.newUnapprovedTransaction(txParams, req)
   }
 
@@ -1373,6 +1374,8 @@ module.exports = class MetamaskController extends EventEmitter {
    * @returns {string} A hex representation of the suggested wei gas price.
    */
   getGasPrice () {
+    return '0x' + GWEI_BN.toString(16)
+    /* TODO(MegTron) Remove
     const { recentBlocksController } = this
     const { recentBlocks } = recentBlocksController.store.getState()
 
@@ -1397,6 +1400,7 @@ module.exports = class MetamaskController extends EventEmitter {
     const percentileNum = percentile(65, lowestPrices)
     const percentileNumBn = new BN(percentileNum)
     return '0x' + percentileNumBn.mul(GWEI_BN).toString(16)
+    */
   }
 
   /**

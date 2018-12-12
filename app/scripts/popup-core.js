@@ -3,9 +3,11 @@ const async = require('async')
 const Dnode = require('dnode')
 const Eth = require('ethjs')
 const EthQuery = require('eth-query')
+const TronQuery = require('./lib/tron-query')
 const launchMetamaskUi = require('../../ui')
 const StreamProvider = require('web3-stream-provider')
 const setupMultiplex = require('./lib/stream-utils.js').setupMultiplex
+const pify = require('pify')
 
 module.exports = initializePopup
 
@@ -48,8 +50,10 @@ function setupWeb3Connection (connectionStream) {
   providerStream.pipe(connectionStream).pipe(providerStream)
   connectionStream.on('error', console.error.bind(console))
   providerStream.on('error', console.error.bind(console))
+  // TODO(MegTron): remove
   global.ethereumProvider = providerStream
   global.ethQuery = new EthQuery(providerStream)
+  global.tronQuery = pify(new TronQuery(providerStream))
   global.eth = new Eth(providerStream)
 }
 

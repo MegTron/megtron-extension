@@ -86,6 +86,7 @@ function getTxParamsFromAddress (txParams) {
  * @returns {string} from address
  */
 function getTxParamsToAddress (txParams) {
+  console.log('xxxxxxxxx getTxParamsToAddress', {txParams})
   if (txParams.to_address) {
     return txParams.to_address
   }
@@ -119,7 +120,7 @@ function validateFrom (txParams) {
  */
 function validateRecipient (txParams) {
   const toAddress = getTxParamsToAddress(txParams)
-  if (toAddress !== undefined && !isValidHexAddress(txParams.to_address)) {
+  if (toAddress !== undefined && !isValidHexAddress(toAddress)) {
     throw new Error('Invalid recipient address')
   }
   return txParams
