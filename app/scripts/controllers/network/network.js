@@ -10,6 +10,7 @@ const createJsonRpcClient = require('./createJsonRpcClient')
 const createLocalhostClient = require('./createLocalhostClient')
 const createTrongridClient = require('./createTrongridClient')
 const { createSwappableProxy, createEventEmitterProxy } = require('swappable-obj-proxy')
+const { getNetworkCode } = require('./util')
 
 const {
   MAINNET,
@@ -82,7 +83,8 @@ module.exports = class NetworkController extends EventEmitter {
     if (!this._provider) {
       return log.warn('NetworkController - lookupNetwork aborted due to missing provider')
     }
-    this.setNetworkState('5')
+    const { type } = this.getProviderConfig()
+    this.setNetworkState(getNetworkCode(type).toString())
   }
 
   setRpcTarget (rpcTarget) {
@@ -94,10 +96,12 @@ module.exports = class NetworkController extends EventEmitter {
   }
 
   async setProviderType (type) {
+    console.log('MegTron.network.setProviderType', { type })
     assert.notEqual(type, 'rpc', `NetworkController - cannot call "setProviderType" with type 'rpc'. use "setRpcTarget"`)
     assert(TRONGRID_PROVIDER_TYPES.includes(type) || type === LOCALHOST, `NetworkController - Unknown rpc type "${type}"`)
     const providerConfig = { type }
     this.providerConfig = providerConfig
+    // this.setNetworkState(getNetworkCode(type))
   }
 
   resetConnection () {

@@ -1,34 +1,28 @@
 const {
-  ROPSTEN,
-  RINKEBY,
-  KOVAN,
   MAINNET,
+  MAINNET_CODE,
   SHASTA,
-  ROPSTEN_CODE,
-  RINKEYBY_CODE,
-  KOVAN_CODE,
   SHASTA_CODE,
-  ROPSTEN_DISPLAY_NAME,
-  RINKEBY_DISPLAY_NAME,
-  KOVAN_DISPLAY_NAME,
   MAINNET_DISPLAY_NAME,
   SHASTA_DISPLAY_NAME,
 } = require('./enums')
 
 const networkToNameMap = {
-  [ROPSTEN]: ROPSTEN_DISPLAY_NAME,
-  [RINKEBY]: RINKEBY_DISPLAY_NAME,
-  [KOVAN]: KOVAN_DISPLAY_NAME,
   [MAINNET]: MAINNET_DISPLAY_NAME,
+  [MAINNET_CODE]: MAINNET_DISPLAY_NAME,
   [SHASTA]: SHASTA_DISPLAY_NAME,
-  [ROPSTEN_CODE]: ROPSTEN_DISPLAY_NAME,
-  [RINKEYBY_CODE]: RINKEBY_DISPLAY_NAME,
-  [KOVAN_CODE]: KOVAN_DISPLAY_NAME,
   [SHASTA_CODE]: SHASTA_DISPLAY_NAME,
 }
 
+const networkToCodeMap = {
+  [MAINNET]: MAINNET_CODE,
+  [SHASTA]: SHASTA_CODE,
+}
+
 const getNetworkDisplayName = key => networkToNameMap[key]
+const getNetworkCode = key => networkToCodeMap[key]
 
 module.exports = {
   getNetworkDisplayName,
+  getNetworkCode,
 }
