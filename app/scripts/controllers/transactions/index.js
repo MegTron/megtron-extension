@@ -348,6 +348,7 @@ class TransactionController extends EventEmitter {
     txMeta.rawTx = rawTx
     this.txStateManager.updateTx(txMeta, 'transactions#publishTransaction')
     const txHash = await this.query.broadcastTransaction({...rawTx})
+    this.setTxPublishStatus(txId, txHash)
     this.setTxHash(txId, txHash)
     this.txStateManager.setTxStatusSubmitted(txId)
   }
@@ -408,6 +409,18 @@ class TransactionController extends EventEmitter {
     const txMeta = this.txStateManager.getTx(txId)
     txMeta.hash = txHash
     this.txStateManager.updateTx(txMeta, 'transactions#setTxHash')
+  }
+
+  /**
+    Sets the tx publish result on the txMeta
+    @param txId {number} - the tx's Id
+    @param status {object} - the publish status for the txMeta
+  */
+  setTxPublishStatus (txId, status) {
+    // Add the tx hash to the persisted meta-tx object
+    const txMeta = this.txStateManager.getTx(txId)
+    txMeta.publish = status
+    this.txStateManager.updateTx(txMeta, 'transactions#setTxPublishStatus')
   }
 
 //

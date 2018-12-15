@@ -8,6 +8,7 @@ module.exports = createMetamaskMiddleware
 function createMetamaskMiddleware ({
   version,
   getAccounts,
+  getTransactionPublishStatus,
   processTransaction,
   processEthSignMessage,
   processTypedMessage,
@@ -22,6 +23,7 @@ function createMetamaskMiddleware ({
     }),
     createWalletSubprovider({
       getAccounts,
+      getTransactionPublishStatus,
       processTransaction,
       processEthSignMessage,
       processTypedMessage,

@@ -36,7 +36,6 @@ const TypedMessageManager = require('./lib/typed-message-manager')
 const TransactionController = require('./controllers/transactions')
 const BalancesController = require('./controllers/computed-balances')
 const TokenRatesController = require('./controllers/token-rates')
-const DetectTokensController = require('./controllers/detect-tokens')
 const nodeify = require('./lib/nodeify')
 const accountImporter = require('./account-import-strategies')
 const getBuyEthUrl = require('./lib/buy-eth-url')
@@ -156,12 +155,6 @@ module.exports = class MetamaskController extends EventEmitter {
 
     this.keyringController.memStore.subscribe((s) => this._onKeyringControllerUpdate(s))
 
-    // detect tokens controller
-    this.detectTokensController = new DetectTokensController({
-      preferences: this.preferencesController,
-      network: this.networkController,
-      keyringMemStore: this.keyringController.memStore,
-    })
 
     // address book controller
     this.addressBookController = new AddressBookController({
@@ -274,6 +267,7 @@ module.exports = class MetamaskController extends EventEmitter {
       },
       // tx signing
       processTransaction: this.newUnapprovedTransaction.bind(this),
+      getTransactionPublishStatus: this.getTransactionPublishStatus.bind(this),
       // msg signing
       processEthSignMessage: this.newUnsignedMessage.bind(this),
       processPersonalMessage: this.newUnsignedPersonalMessage.bind(this),
@@ -863,6 +857,10 @@ module.exports = class MetamaskController extends EventEmitter {
     return await this.txController.newUnapprovedTransaction(txParams, req)
   }
 
+  async getTransactionPublishStatus (txID) {
+    return await this.txController.txStateManager.getTransactionPublishStatus(txID)
+  }
+
   // eth_sign methods:
 
   /**
@@ -1375,7 +1373,7 @@ module.exports = class MetamaskController extends EventEmitter {
    */
   getGasPrice () {
     return '0x' + GWEI_BN.toString(16)
-    /* TODO(MegTron) Remove
+    /* TODO(MegTron): Remove
     const { recentBlocksController } = this
     const { recentBlocks } = recentBlocksController.store.getState()
 
@@ -1537,7 +1535,6 @@ module.exports = class MetamaskController extends EventEmitter {
   set isClientOpen (open) {
     this._isClientOpen = open
     this.isClientOpenAndUnlocked = this.getState().isUnlocked && open
-    this.detectTokensController.isOpen = open
   }
 
   /**

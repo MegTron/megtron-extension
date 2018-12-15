@@ -1,7 +1,6 @@
 const extend = require('xtend')
 const EventEmitter = require('events')
 const ObservableStore = require('obs-store')
-const ethUtil = require('ethereumjs-util')
 const log = require('loglevel')
 const txStateHistoryHelper = require('./lib/tx-state-history-helper')
 const createId = require('../../lib/random-id')
@@ -272,6 +271,21 @@ class TransactionStateManager extends EventEmitter {
   getTxStatus (txId) {
     const txMeta = this.getTx(txId)
     return txMeta.status
+  }
+
+  /**
+    @param txID {string} - the txMeta
+    @return {string} the status of the tx.
+  */
+  getTransactionPublishStatus (txID) {
+    const txList = this.getTxList()
+    const tx = txList.find((txMeta) => {
+      return txMeta.rawTx && txMeta.rawTx.txID === txID
+    })
+    if (!tx) {
+      return undefined
+    }
+    return tx.publish
   }
 
   /**

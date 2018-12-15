@@ -6,11 +6,12 @@ module.exports = createWalletMiddleware
 
 function createWalletMiddleware (opts = {}) {
   const processTransaction = opts.processTransaction
-  // parse + validate options
   const getAccounts = opts.getAccounts
+  const getTransactionPublishStatus = opts.getTransactionPublishStatus
 
   return createScaffoldMiddleware({
     'wallet/gettransactionsign': createAsyncMiddleware(signTransaction),
+    'wallet/broadcasttransaction': createAsyncMiddleware(broadcastTransaction),
   })
 
   async function signTransaction (req, res) {
@@ -29,5 +30,16 @@ function createWalletMiddleware (opts = {}) {
     if (!getAccounts) throw new Error('WalletMiddleware - opts.getAccounts not provided')
     const accounts = await getAccounts(req)
     if (!accounts.includes(address)) throw new Error('WalletMiddleware - Invalid "from" address.')
+  }
+
+  async function broadcastTransaction (req, res, next) {
+    if (!getTransactionPublishStatus) throw new Error('WalletMiddleware - opts.getTransactionPublishStatus not provided')
+    const txID = req.params[0].txID
+    const publishStatus = await getTransactionPublishStatus(txID)
+    if (publishStatus) {
+      res.result = publishStatus
+    } else {
+      next()
+    }
   }
 }
