@@ -14,6 +14,7 @@ module.exports = {
   getFinalStates,
   getTxParamsFromAddress,
   getTxParamsToAddress,
+  getTxParamsAmount,
   getBase58Address,
   getHexAddress,
 }
@@ -86,13 +87,15 @@ function getTxParamsFromAddress (txParams) {
  * @returns {string} from address
  */
 function getTxParamsToAddress (txParams) {
-  console.log('xxxxxxxxx getTxParamsToAddress', {txParams})
-  if (txParams.to_address) {
-    return txParams.to_address
-  }
-  if (txParams.raw_data) {
-    return txParams.raw_data.contract[0].parameter.value.to_address
-  }
+  return (txParams.to_address ||
+    txParams.raw_data.contract[0].parameter.value.to_address ||
+    txParams.raw_data.contract[0].parameter.value.contract_address)
+}
+
+function getTxParamsAmount (txParams) {
+  return (txParams.amount ||
+    txParams.raw_data.contract[0].parameter.value.amount ||
+    txParams.raw_data.contract[0].parameter.value.call_value)
 }
 
  /**
