@@ -83,10 +83,10 @@ TokenCell.prototype.render = function () {
 
   return (
     h('div.token-list-item', {
-      className: `token-list-item ${selectedTokenAddress === address ? 'token-list-item--active' : ''}`,
+      className: `token-list-item ${selectedTokenAddress === assetKey ? 'token-list-item--active' : ''}`,
       onClick: () => {
-        setSelectedToken(address)
-        selectedTokenAddress !== address && sidebarOpen && hideSidebar()
+        setSelectedToken(assetKey)
+        selectedTokenAddress !== assetKey && sidebarOpen && hideSidebar()
       },
     }, [
 

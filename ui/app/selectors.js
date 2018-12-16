@@ -59,12 +59,12 @@ function getSelectedAccount (state) {
 }
 
 function getSelectedToken (state) {
-  const tokens = state.metamask.tokens || []
-  const selectedTokenAddress = state.metamask.selectedTokenAddress
-  const selectedToken = tokens.filter(({ address }) => address === selectedTokenAddress)[0]
-  const sendToken = state.metamask.send.token
-
-  return selectedToken || sendToken || null
+  // This is actually the token name, eg. "MegTron"
+  const name = state.metamask.selectedTokenAddress
+  if (!name) {
+    return null
+  }
+  return { address: name, decimals: '0', symbol: name}
 }
 
 function getSelectedTokenExchangeRate (state) {
