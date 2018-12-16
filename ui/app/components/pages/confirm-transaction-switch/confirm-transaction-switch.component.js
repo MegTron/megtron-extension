@@ -12,11 +12,12 @@ import {
   CONFIRM_TOKEN_METHOD_PATH,
   SIGNATURE_REQUEST_PATH,
 } from '../../../routes'
-import { isConfirmDeployContract } from '../../../helpers/transactions.util'
+import { getTxParamsContractType } from '../../../helpers/transactions.util'
 import {
-  TOKEN_METHOD_TRANSFER,
-  TOKEN_METHOD_APPROVE,
-  TOKEN_METHOD_TRANSFER_FROM,
+  CONTRACT_TYPE_SEND_TRX,
+  CONTRACT_TYPE_SEND_TOKEN,
+  CONTRACT_TYPE_CREATE_SMART_CONTRACT,
+  CONTRACT_TYPE_TRIGGER_SMART_CONTRACT,
 } from '../../../constants/transactions'
 
 export default class ConfirmTransactionSwitch extends Component {
@@ -30,51 +31,38 @@ export default class ConfirmTransactionSwitch extends Component {
   redirectToTransaction () {
     const {
       txData,
-      methodData: { name },
       fetchingData,
-      isEtherTransaction,
     } = this.props
-    const { id, txParams: { data } = {} } = txData
-
-    if (isConfirmDeployContract(txData)) {
-      const pathname = `${CONFIRM_TRANSACTION_ROUTE}/${id}${CONFIRM_DEPLOY_CONTRACT_PATH}`
-      return <Redirect to={{ pathname }} />
-    }
+    const { id, txParams } = txData
 
     if (fetchingData) {
       return <Loading />
     }
 
-    if (isEtherTransaction) {
-      const pathname = `${CONFIRM_TRANSACTION_ROUTE}/${id}${CONFIRM_SEND_ETHER_PATH}`
-      return <Redirect to={{ pathname }} />
-    }
+    const contractType = getTxParamsContractType(txParams)
 
-    if (data) {
-      const methodName = name && name.toLowerCase()
-
-      switch (methodName) {
-        case TOKEN_METHOD_TRANSFER: {
-          const pathname = `${CONFIRM_TRANSACTION_ROUTE}/${id}${CONFIRM_SEND_TOKEN_PATH}`
-          return <Redirect to={{ pathname }} />
-        }
-        case TOKEN_METHOD_APPROVE: {
-          const pathname = `${CONFIRM_TRANSACTION_ROUTE}/${id}${CONFIRM_APPROVE_PATH}`
-          return <Redirect to={{ pathname }} />
-        }
-        case TOKEN_METHOD_TRANSFER_FROM: {
-          const pathname = `${CONFIRM_TRANSACTION_ROUTE}/${id}${CONFIRM_TRANSFER_FROM_PATH}`
-          return <Redirect to={{ pathname }} />
-        }
-        default: {
-          const pathname = `${CONFIRM_TRANSACTION_ROUTE}/${id}${CONFIRM_TOKEN_METHOD_PATH}`
-          return <Redirect to={{ pathname }} />
-        }
+    switch (contractType) {
+      case CONTRACT_TYPE_CREATE_SMART_CONTRACT: {
+        const pathname = `${CONFIRM_TRANSACTION_ROUTE}/${id}${CONFIRM_DEPLOY_CONTRACT_PATH}`
+        return <Redirect to={{ pathname }} />
+      }
+      case CONTRACT_TYPE_SEND_TRX: {
+        const pathname = `${CONFIRM_TRANSACTION_ROUTE}/${id}${CONFIRM_SEND_ETHER_PATH}`
+        return <Redirect to={{ pathname }} />
+      }
+      case CONTRACT_TYPE_SEND_TOKEN: {
+        const pathname = `${CONFIRM_TRANSACTION_ROUTE}/${id}${CONFIRM_SEND_TOKEN_PATH}`
+        return <Redirect to={{ pathname }} />
+      }
+      case CONTRACT_TYPE_TRIGGER_SMART_CONTRACT: {
+        const pathname = `${CONFIRM_TRANSACTION_ROUTE}/${id}${CONFIRM_APPROVE_PATH}`
+        return <Redirect to={{ pathname }} />
+      }
+      default: {
+        const pathname = `${CONFIRM_TRANSACTION_ROUTE}/${id}${CONFIRM_SEND_ETHER_PATH}`
+        return <Redirect to={{ pathname }} />
       }
     }
-
-    const pathname = `${CONFIRM_TRANSACTION_ROUTE}/${id}${CONFIRM_SEND_ETHER_PATH}`
-    return <Redirect to={{ pathname }} />
   }
 
   render () {

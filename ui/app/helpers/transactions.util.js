@@ -20,7 +20,6 @@ import {
 
 import { addCurrencies } from '../conversion-util'
 
-const CONTRACT_TYPE_CREATE_SMART_CONTRACT = 'CreateSmartContract'
 abiDecoder.addABI(abi)
 
 export function getTokenData (data = '') {
@@ -77,11 +76,6 @@ export function getTxParamsContractType (txParams) {
 
 export function getTxParamsAmount (txParams) {
   return txParams.amount || txParams.raw_data.contract[0].parameter.value.amount || txParams.raw_data.contract[0].parameter.value.call_value || 0
-}
-
-export function isConfirmDeployContract (txData = {}) {
-  const { txParams = {} } = txData
-  return getTxParamsContractType(txParams) === CONTRACT_TYPE_CREATE_SMART_CONTRACT
 }
 
 /**

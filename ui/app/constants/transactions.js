@@ -21,3 +21,8 @@ export const UNKNOWN_FUNCTION_KEY = 'unknownFunction'
 export const CANCEL_ATTEMPT_ACTION_KEY = 'cancelAttempt'
 
 export const TRANSACTION_TYPE_SHAPESHIFT = 'shapeshift'
+
+export const CONTRACT_TYPE_CREATE_SMART_CONTRACT = 'CreateSmartContract'
+export const CONTRACT_TYPE_SEND_TRX = 'TransferContract'
+export const CONTRACT_TYPE_SEND_TOKEN = 'TransferAssetContract'
+export const CONTRACT_TYPE_TRIGGER_SMART_CONTRACT = 'TriggerSmartContract'
