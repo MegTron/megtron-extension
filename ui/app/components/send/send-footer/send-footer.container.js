@@ -55,15 +55,25 @@ function mapDispatchToProps (dispatch) {
   return {
     clearSend: () => dispatch(clearSend()),
     sign: async ({ selectedToken, to, amount, from }) => {
-      const txParams = await global.tronQuery.createTransaction({
-        amount: parseInt(amount, 16),
-        owner_address: getHexAddress(from),
-        to_address: getHexAddress(to),
-      })
-
-      selectedToken
-        ? dispatch(signTokenTx(selectedToken.address, to, amount, txParams))
-        : dispatch(signTx(txParams))
+      let txParams
+      const ownerAddress = getHexAddress(from)
+      const toAddress = getHexAddress(to)
+      if (selectedToken) {
+        const assetName = new Buffer(selectedToken.symbol).toString('hex')
+        txParams = await global.tronQuery.transferAsset({
+          amount: parseInt(amount, 16),
+          owner_address: ownerAddress,
+          to_address: toAddress,
+          asset_name: assetName,
+        })
+      } else {
+        txParams = await global.tronQuery.createTransaction({
+          amount: parseInt(amount, 16),
+          owner_address: ownerAddress,
+          to_address: toAddress,
+        })
+      }
+      dispatch(signTx(txParams))
     },
     update: ({
       amount,

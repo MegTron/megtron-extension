@@ -954,6 +954,9 @@ function updateSendTokenBalance ({
   tokenContract,
   address,
 }) {
+  if (!selectedToken) {
+    return dispatch => {}
+  }
   const hexAddress = getHexAddress(address)
   const symbol = selectedToken.symbol
   return (dispatch) => {
@@ -1058,6 +1061,7 @@ function sendTx (txData) {
   }
 }
 
+// TODO(MegTron): derecated
 function signTokenTx (tokenAddress, toAddress, amount, txData) {
   return dispatch => {
     dispatch(actions.showLoadingIndication())
