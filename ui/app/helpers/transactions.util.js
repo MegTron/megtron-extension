@@ -76,7 +76,7 @@ export function getTxParamsContractType (txParams) {
 }
 
 export function getTxParamsAmount (txParams) {
-  return txParams.amount || txParams.raw_data.contract[0].parameter.value.amount || txParams.raw_data.contract[0].parameter.value.call_value
+  return txParams.amount || txParams.raw_data.contract[0].parameter.value.amount || txParams.raw_data.contract[0].parameter.value.call_value || 0
 }
 
 export function isConfirmDeployContract (txData = {}) {
