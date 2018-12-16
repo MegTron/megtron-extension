@@ -13,6 +13,7 @@ const log = require('loglevel')
 const { ENVIRONMENT_TYPE_NOTIFICATION } = require('../../app/scripts/lib/enums')
 const { hasUnconfirmedTransactions } = require('./helpers/confirm-transaction/util')
 const WebcamUtils = require('../lib/webcam-utils')
+const { getHexAddress } = require('./helpers/transactions.util')
 
 var actions = {
   _setBackgroundConnection: _setBackgroundConnection,
@@ -953,16 +954,13 @@ function updateSendTokenBalance ({
   tokenContract,
   address,
 }) {
+  const hexAddress = getHexAddress(address)
+  const symbol = selectedToken.symbol
   return (dispatch) => {
-    const tokenBalancePromise = tokenContract
-      ? tokenContract.balanceOf(address)
-      : Promise.resolve()
-    return tokenBalancePromise
-      .then(usersToken => {
-        if (usersToken) {
-          const newTokenBalance = calcTokenBalance({ selectedToken, usersToken })
-          dispatch(setSendTokenBalance(newTokenBalance.toString(10)))
-        }
+    return global.tronQuery.getBalance({ address: hexAddress})
+      .then(balanceResult => {
+        const balance = balanceResult.asset.find(item => item.key === symbol).value
+        dispatch(setSendTokenBalance(balance.toString()))
       })
       .catch(err => {
         log.error(err)
