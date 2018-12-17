@@ -6,7 +6,7 @@ import {
 } from '../../../../../app/scripts/lib/enums'
 import NetworkDisplay from '../../network-display'
 
-export default class ConfirmPageContainer extends Component {
+export default class ConfirmPageContainerHeader extends Component {
   static contextTypes = {
     t: PropTypes.func,
   }
@@ -18,7 +18,9 @@ export default class ConfirmPageContainer extends Component {
   }
 
   renderTop () {
-    const { onEdit, showEdit } = this.props
+    const { onEdit } = this.props
+    // TODO(MegTron): Add feature to support editing.
+    const showEdit = false
     const windowType = window.METAMASK_UI_TYPE
     const isFullScreen = windowType !== ENVIRONMENT_TYPE_NOTIFICATION &&
       windowType !== ENVIRONMENT_TYPE_POPUP

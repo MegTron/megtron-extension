@@ -16,6 +16,10 @@ import {
   SIGNATURE_REQUEST_KEY,
   UNKNOWN_FUNCTION_KEY,
   CANCEL_ATTEMPT_ACTION_KEY,
+  CONTRACT_TYPE_SEND_TRX,
+  CONTRACT_TYPE_SEND_TOKEN,
+  CONTRACT_TYPE_CREATE_SMART_CONTRACT,
+  CONTRACT_TYPE_TRIGGER_SMART_CONTRACT,
 } from '../constants/transactions'
 
 import { addCurrencies } from '../conversion-util'
@@ -85,7 +89,7 @@ export function getTxParamsAmount (txParams) {
  * @returns {string|undefined}
  */
 export async function getTransactionActionKey (transaction, methodData) {
-  const { txParams: { data, to } = {}, msgParams, type } = transaction
+  const { txParams, msgParams, type } = transaction
 
   if (type === 'cancel') {
     return CANCEL_ATTEMPT_ACTION_KEY
@@ -95,36 +99,23 @@ export async function getTransactionActionKey (transaction, methodData) {
     return SIGNATURE_REQUEST_KEY
   }
 
-  if (isConfirmDeployContract(transaction)) {
-    return DEPLOY_CONTRACT_ACTION_KEY
-  }
-
-  if (data) {
-    const toSmartContract = await isSmartContractAddress(to)
-
-    if (!toSmartContract) {
+  const contractType = getTxParamsContractType(txParams)
+  switch (contractType) {
+    case CONTRACT_TYPE_CREATE_SMART_CONTRACT: {
+      return DEPLOY_CONTRACT_ACTION_KEY
+    }
+    case CONTRACT_TYPE_SEND_TRX: {
       return SEND_ETHER_ACTION_KEY
     }
-
-    const { name } = methodData
-    const methodName = name && name.toLowerCase()
-
-    if (!methodName) {
-      return UNKNOWN_FUNCTION_KEY
+    case CONTRACT_TYPE_SEND_TOKEN: {
+      return SEND_TOKEN_ACTION_KEY
     }
-
-    switch (methodName) {
-      case TOKEN_METHOD_TRANSFER:
-        return SEND_TOKEN_ACTION_KEY
-      case TOKEN_METHOD_APPROVE:
-        return APPROVE_ACTION_KEY
-      case TOKEN_METHOD_TRANSFER_FROM:
-        return TRANSFER_FROM_ACTION_KEY
-      default:
-        return undefined
+    case CONTRACT_TYPE_TRIGGER_SMART_CONTRACT: {
+      return APPROVE_ACTION_KEY
     }
-  } else {
-    return SEND_ETHER_ACTION_KEY
+    default: {
+      return SEND_ETHER_ACTION_KEY
+    }
   }
 }
 

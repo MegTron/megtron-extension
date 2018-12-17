@@ -9,7 +9,7 @@ import {
   roundExponential,
 } from '../../../helpers/confirm-transaction/util'
 import { getSunHexFromDecimalValue } from '../../../helpers/conversions.util'
-import { ETH, PRIMARY } from '../../../constants/common'
+import { TRX, PRIMARY } from '../../../constants/common'
 
 export default class ConfirmTokenTransactionBase extends Component {
   static contextTypes = {
@@ -41,14 +41,12 @@ export default class ConfirmTokenTransactionBase extends Component {
 
   renderSubtitleComponent () {
     const { contractExchangeRate, tokenAmount } = this.props
-
     const decimalEthValue = (tokenAmount * contractExchangeRate) || 0
     const hexWeiValue = getSunHexFromDecimalValue({
       value: decimalEthValue,
-      fromCurrency: ETH,
-      fromDenomination: ETH,
+      fromCurrency: TRX,
+      fromDenomination: TRX,
     })
-
     return typeof contractExchangeRate === 'undefined'
       ? (
         <span>
