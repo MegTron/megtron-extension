@@ -202,10 +202,11 @@ export default class ConfirmTransactionBase extends Component {
     const {
       txData: { txParams },
       dataComponent,
+      hideData,
     } = this.props
+    if (hideData) return null
     const contract = txParams.raw_data.contract[0]
     const { type: name, parameter: { value: params } = {}} = contract
-
 
     return dataComponent || (
       <div className="confirm-page-container-content__data">
