@@ -176,7 +176,7 @@ const getValidateEditGas = ({ balance, conversionRate, txData }) => {
 }
 
 const mergeProps = (stateProps, dispatchProps, ownProps) => {
-  const { balance, conversionRate, txData, unapprovedTxs } = stateProps
+  const { balance, conversionRate, txData, unapprovedTxs, toAddress } = stateProps
   const {
     cancelAllTransactions: dispatchCancelAllTransactions,
     showCustomizeGasModal: dispatchShowCustomizeGasModal,
@@ -195,6 +195,7 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
       onSubmit: txData => dispatchUpdateGasAndCalculate(txData),
       validate: validateEditGas,
     }),
+    toAddress,
     cancelAllTransactions: () => dispatchCancelAllTransactions(valuesFor(unapprovedTxs)),
   }
 }
