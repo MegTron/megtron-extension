@@ -4,6 +4,10 @@ import ConfirmTokenTransactionBase from '../confirm-token-transaction-base'
 import { SEND_ROUTE } from '../../../routes'
 
 export default class ConfirmSendToken extends Component {
+  static contextTypes = {
+    t: PropTypes.func,
+  }
+
   static propTypes = {
     history: PropTypes.object,
     editTransaction: PropTypes.func,
@@ -21,6 +25,7 @@ export default class ConfirmSendToken extends Component {
 
     return (
       <ConfirmTokenTransactionBase
+        action={this.context.t('confirm')}
         onEdit={confirmTransactionData => this.handleEdit(confirmTransactionData)}
         tokenAmount={tokenAmount}
       />

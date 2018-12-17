@@ -9,13 +9,12 @@ const mapStateToProps = (state, ownProps) => {
   const { tokenAmount: ownTokenAmount } = ownProps
   const { confirmTransaction, metamask: { currentCurrency, conversionRate } } = state
   const {
-    txData: { txParams: { to: tokenAddress } = {} } = {},
-    tokenProps: { tokenSymbol } = {},
     fiatTransactionTotal,
     ethTransactionTotal,
   } = confirmTransaction
 
-  const { tokenAmount, toAddress } = tokenAmountAndToAddressSelector(state)
+  const { tokenAmount, toAddress, tokenAddress } = tokenAmountAndToAddressSelector(state)
+  const tokenSymbol = new Buffer(tokenAddress, 'hex').toString()
   const contractExchangeRate = contractExchangeRateSelector(state)
 
   return {
