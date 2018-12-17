@@ -200,22 +200,12 @@ export default class ConfirmTransactionBase extends Component {
   renderData () {
     const { t } = this.context
     const {
-      txData: {
-        txParams: {
-          data,
-        } = {},
-      } = {},
-      methodData: {
-        name,
-        params,
-      } = {},
-      hideData,
+      txData: { txParams },
       dataComponent,
     } = this.props
+    const contract = txParams.raw_data.contract[0]
+    const { type: name, parameter: { value: params } = {}} = contract
 
-    if (hideData) {
-      return null
-    }
 
     return dataComponent || (
       <div className="confirm-page-container-content__data">
@@ -237,12 +227,6 @@ export default class ConfirmTransactionBase extends Component {
             </div>
           )
         }
-        <div className="confirm-page-container-content__data-box-label">
-          {`${t('hexData')}:`}
-        </div>
-        <div className="confirm-page-container-content__data-box">
-          { data }
-        </div>
       </div>
     )
   }
@@ -349,6 +333,7 @@ export default class ConfirmTransactionBase extends Component {
   }
 
   render () {
+    console.log('zzz', this.props)
     const {
       isTxReprice,
       fromName,
