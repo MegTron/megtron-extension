@@ -59,15 +59,23 @@ function imageElFor (address) {
 }
 
 function jsNumberForAddress (address) {
-  let addr
-  try {
-    // Assuming Base58 Address, convert to hex first
-    addr = getHexAddress(address)
-    // Remove first byte, which is always 0x41 for Tron
-    addr = addr.slice(2, 10)
-  } catch (e) {
-    // Convert string to hex directly
-    addr = new Buffer(address).toString('hex')
+  if (!address) {
+    return 0
+  }
+  let addr = address
+  if (addr.length === 34 && addr[0] === 'T') {
+    try {
+      // Assuming Base58 Address, convert to hex first
+      addr = getHexAddress(address)
+      // Remove first byte, which is always 0x41 for Tron
+      addr = addr.slice(2, 10)
+    } catch (e) {
+      addr = address
+    }
+  }
+  if (new Buffer(addr, 'hex').toString('hex') !== addr) {
+    // If not already a hex value, convert to hex.
+    addr = new Buffer(addr).toString('hex')
   }
   var seed = parseInt(addr, 16)
   return seed
