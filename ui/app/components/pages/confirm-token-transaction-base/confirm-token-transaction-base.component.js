@@ -48,11 +48,8 @@ export default class ConfirmTokenTransactionBase extends Component {
       fromDenomination: TRX,
     })
     return typeof contractExchangeRate === 'undefined'
-      ? (
-        <span>
-          { this.context.t('noConversionRateAvailable') }
-        </span>
-      ) : (
+      ? null
+      : (
         <UserPreferencedCurrencyDisplay
           value={hexWeiValue}
           type={PRIMARY}
@@ -100,7 +97,7 @@ export default class ConfirmTokenTransactionBase extends Component {
       ...restProps
     } = this.props
 
-    const tokensText = `${tokenAmount} ${tokenSymbol}`
+    const tokensText = `${tokenAmount} ${tokenSymbol || 'TRX'}`
 
     return (
       <ConfirmTransactionBase

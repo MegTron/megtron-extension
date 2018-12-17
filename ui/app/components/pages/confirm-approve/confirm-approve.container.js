@@ -3,12 +3,17 @@ import ConfirmApprove from './confirm-approve.component'
 import { approveTokenAmountAndToAddressSelector } from '../../../selectors/confirm-transaction'
 
 const mapStateToProps = state => {
-  const { confirmTransaction: { tokenProps: { tokenSymbol } = {} } } = state
-  const { tokenAmount } = approveTokenAmountAndToAddressSelector(state)
+  const { tokenAmount, tokenSymbol} = approveTokenAmountAndToAddressSelector(state)
 
+  if (tokenSymbol) {
+    return {
+      tokenAmount,
+      tokenSymbol,
+    }
+  }
   return {
-    tokenAmount,
-    tokenSymbol,
+    tokenAmount: tokenAmount / 1000000.0,
+    tokenSymbol: 'TRX',
   }
 }
 

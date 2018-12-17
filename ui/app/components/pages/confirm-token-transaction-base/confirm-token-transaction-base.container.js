@@ -13,8 +13,7 @@ const mapStateToProps = (state, ownProps) => {
     ethTransactionTotal,
   } = confirmTransaction
 
-  const { tokenAmount, toAddress, tokenAddress } = tokenAmountAndToAddressSelector(state)
-  const tokenSymbol = new Buffer(tokenAddress, 'hex').toString()
+  const { tokenAmount, toAddress, tokenAddress, tokenSymbol } = tokenAmountAndToAddressSelector(state)
   const contractExchangeRate = contractExchangeRateSelector(state)
 
   return {

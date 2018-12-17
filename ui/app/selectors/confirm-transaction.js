@@ -112,10 +112,12 @@ export const tokenAmountAndToAddressSelector = createSelector(
     const { txParams } = txData
     const tokenAmount = getTxParamsAmount(txParams)
     const tokenAddress = getTxParamsAssetName(txParams)
+    const tokenSymbol = tokenAddress ? new Buffer(tokenAddress, 'hex').toString() : undefined
     const toAddress = getBase58Address(getTxParamsToAddress(txParams))
     return {
-      tokenAmount,
       tokenAddress,
+      tokenAmount,
+      tokenSymbol,
       toAddress,
     }
   }
