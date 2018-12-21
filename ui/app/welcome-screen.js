@@ -44,10 +44,12 @@ class WelcomeScreen extends Component {
 
         h('div.welcome-screen__info', [
 
-          h(Mascot, {
-            animationEventEmitter: this.animationEventEmitter,
-            width: '225',
-            height: '225',
+          h('img', {
+            style: {
+              width: '256px',
+              marginBottom: '30px',
+            },
+            src: 'images/megtron.svg',
           }),
 
           h('div.welcome-screen__info__header', this.context.t('welcomeBeta')),

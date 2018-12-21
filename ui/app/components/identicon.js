@@ -57,7 +57,7 @@ IdenticonComponent.prototype.render = function () {
   } else {
     return h('img.balance-icon', {
       className,
-      src: './images/icon-128.png',
+      src: './images/tron.svg',
       style: {
         ...style,
       },

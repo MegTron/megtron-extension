@@ -116,10 +116,10 @@ export default class UnlockPage extends Component {
       <div className="unlock-page__container">
         <div className="unlock-page">
           <div className="unlock-page__mascot-container">
-            <Mascot
-              animationEventEmitter={this.animationEventEmitter}
+            <img
               width="120"
               height="120"
+              src="images/icon-128.png"
             />
           </div>
           <h1 className="unlock-page__title">
