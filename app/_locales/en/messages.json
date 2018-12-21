@@ -371,7 +371,7 @@
     "message": "TRX"
   },
   "etherscanView": {
-    "message": "View account on Etherscan"
+    "message": "View account on Tronscan"
   },
   "exchangeRate": {
     "message": "Exchange Rate"

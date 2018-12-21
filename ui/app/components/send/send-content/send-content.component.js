@@ -27,7 +27,6 @@ export default class SendContent extends Component {
             scanQrCode={ _ => this.props.scanQrCode()}
           />
           <SendAmountRow updateGas={this.updateGas} />
-          <SendGasRow />
           {(this.props.showHexData && (
             <SendHexDataRow
               updateGas={this.updateGas}
