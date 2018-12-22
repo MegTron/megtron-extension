@@ -93,16 +93,14 @@ export default class TransactionListItem extends PureComponent {
 
   renderPrimaryCurrency () {
     const { token, transaction: { txParams } = {} } = this.props
-    // TODO(MegTron): get data from txParams.
-    const data = undefined
     const value = '0x' + getTxParamsAmount(txParams).toString(16)
-
+    const amount = getTxParamsAmount(txParams)
     return token
       ? (
         <TokenCurrencyDisplay
           className="transaction-list-item__amount transaction-list-item__amount--primary"
           token={token}
-          transactionData={data}
+          amount={amount}
           prefix="-"
         />
       ) : (

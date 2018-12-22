@@ -5,6 +5,7 @@ import {
   APPROVED_STATUS,
   SUBMITTED_STATUS,
 } from '../constants/transactions'
+import { getTxParamsAssetName } from '../helpers/transactions.util'
 
 import { selectedTokenAddressSelector } from './tokens'
 
@@ -26,10 +27,9 @@ export const transactionsSelector = createSelector(
   (selectedTokenAddress, unapprovedMsgs = {}, shapeShiftTxList = [], transactions = []) => {
     const unapprovedMsgsList = valuesFor(unapprovedMsgs)
     const txsToRender = transactions.concat(unapprovedMsgsList, shapeShiftTxList)
-
     return selectedTokenAddress
       ? txsToRender
-        .filter(({ txParams }) => txParams && txParams.to === selectedTokenAddress)
+        .filter(({ txParams }) => txParams && getTxParamsAssetName(txParams) === new Buffer(selectedTokenAddress).toString('hex'))
         .sort((a, b) => b.time - a.time)
       : txsToRender
         .sort((a, b) => b.time - a.time)
