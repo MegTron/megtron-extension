@@ -101,7 +101,6 @@ module.exports = class NetworkController extends EventEmitter {
     assert(TRONGRID_PROVIDER_TYPES.includes(type) || type === LOCALHOST, `NetworkController - Unknown rpc type "${type}"`)
     const providerConfig = { type }
     this.providerConfig = providerConfig
-    // this.setNetworkState(getNetworkCode(type))
   }
 
   resetConnection () {

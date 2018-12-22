@@ -10,25 +10,6 @@ function addHexPrefixToObjectValues (obj) {
   }, {})
 }
 
-function constructTxParams ({ selectedToken, data, to, amount, from, gas, gasPrice }) {
-  console.error('MegTron deprecated send-footer.utils.js constructTxParams')
-  console.trace()
-  const txParams = {
-    data,
-    from,
-    value: '0',
-    gas,
-    gasPrice,
-  }
-
-  if (!selectedToken) {
-    txParams.value = amount
-    txParams.to = to
-  }
-
-  return addHexPrefixToObjectValues(txParams)
-}
-
 /* Construct Tron Tx Params
 *
 * @param {string} to the base58 form of destination address.
@@ -99,7 +80,6 @@ function addressIsNew (toAccounts, newAddress) {
 
 module.exports = {
   addressIsNew,
-  constructTxParams,
   constructTronTxParams,
   constructUpdatedTx,
   addHexPrefixToObjectValues,

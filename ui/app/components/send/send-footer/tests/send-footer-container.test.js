@@ -14,7 +14,6 @@ const actionSpies = {
 }
 const utilsStubs = {
   addressIsNew: sinon.stub().returns(true),
-  constructTxParams: sinon.stub().returns('mockConstructedTxParams'),
   constructUpdatedTx: sinon.stub().returns('mockConstructedUpdatedTxParams'),
 }
 
