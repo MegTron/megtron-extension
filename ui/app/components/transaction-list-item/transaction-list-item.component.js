@@ -11,7 +11,7 @@ import { CONFIRM_TRANSACTION_ROUTE } from '../../routes'
 import { UNAPPROVED_STATUS, TOKEN_METHOD_TRANSFER } from '../../constants/transactions'
 import { PRIMARY, SECONDARY } from '../../constants/common'
 import { ENVIRONMENT_TYPE_FULLSCREEN } from '../../../../app/scripts/lib/enums'
-import { getStatusKey, getTxParamsAmount } from '../../helpers/transactions.util'
+import { getStatusKey, getTxParamsAmount, getTxParamsAssetName, getTxParamsToAddress, getBase58Address } from '../../helpers/transactions.util'
 
 export default class TransactionListItem extends PureComponent {
   static propTypes = {
@@ -92,9 +92,13 @@ export default class TransactionListItem extends PureComponent {
   }
 
   renderPrimaryCurrency () {
-    const { token, transaction: { txParams } = {} } = this.props
+    const { transaction: { txParams } = {} } = this.props
     const value = '0x' + getTxParamsAmount(txParams).toString(16)
     const amount = getTxParamsAmount(txParams)
+    const assetName = getTxParamsAssetName(txParams)
+    const symbol = assetName ? new Buffer(assetName, 'hex').toString() : null
+    const token = assetName ? { address: assetName, decimals: 0, symbol } : null
+
     return token
       ? (
         <TokenCurrencyDisplay
@@ -136,14 +140,11 @@ export default class TransactionListItem extends PureComponent {
       nonceAndDate,
       showCancel,
       showRetry,
-      tokenData,
       transaction,
     } = this.props
     const { txParams = {} } = transaction
     const { showTransactionDetails } = this.state
-    const toAddress = tokenData
-      ? tokenData.params && tokenData.params[0] && tokenData.params[0].value || txParams.to
-      : txParams.to
+    const toAddress = getBase58Address(getTxParamsToAddress(txParams))
 
     return (
       <div className="transaction-list-item">
