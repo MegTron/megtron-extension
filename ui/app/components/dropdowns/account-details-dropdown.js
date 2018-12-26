@@ -93,7 +93,7 @@ AccountDetailsDropdown.prototype.render = function () {
         viewOnEtherscan(address, network)
         this.props.onClose()
       },
-      text: this.context.t('viewOnEtherscan'),
+      text: this.context.t('viewOnTronscan'),
       icon: h(`img`, { src: 'images/open-etherscan.svg', style: { height: '15px' } }),
     }),
     isRemovable ? h(Item, {
