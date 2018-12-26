@@ -31,8 +31,8 @@ export default class FromDropdown extends Component {
     return <div className="send-v2__from-dropdown">
       <AccountListItem
         account={selectedAccount}
-        handleClick={openDropdown}
-        icon={<i className={`fa fa-caret-down fa-lg`} style={ { color: '#dedede' } }/>}
+        handleClick={() => {}}
+        icon={ null }
       />
       {dropdownOpen && <SendDropdownList
         accounts={accounts}
