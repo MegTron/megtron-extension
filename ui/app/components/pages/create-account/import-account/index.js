@@ -39,17 +39,6 @@ AccountImportSubview.prototype.render = function () {
 
       h('.new-account-import-disclaimer', [
         h('span', this.context.t('importAccountMsg')),
-        h('span', {
-          style: {
-            cursor: 'pointer',
-            textDecoration: 'underline',
-          },
-          onClick: () => {
-            global.platform.openWindow({
-              url: 'https://metamask.zendesk.com/hc/en-us/articles/360015289932',
-            })
-          },
-        }, this.context.t('here')),
       ]),
 
       h('div.new-account-import-form__select-section', [
