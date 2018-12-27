@@ -78,7 +78,7 @@
     "message": "Borrow With Dharma (Beta)"
   },
   "builtInCalifornia": {
-    "message": "MegTron在加利福尼亚设计和制造。"
+    "message": "MegTron基于MetaMask,在加利福尼亚制造。"
   },
   "buy": {
     "message": "购买"
@@ -240,6 +240,9 @@
   },
   "directDepositEtherExplainer": {
     "message": "如果你已经有了一些 TRX，通过直接转入是你的新钱包获取 TRX 的最快捷方式。"
+  },
+  "discordForum": {
+    "message": "Discord 社区"
   },
   "done": {
     "message": "完成"

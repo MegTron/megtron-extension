@@ -32,7 +32,7 @@ export default class InfoTab extends PureComponent {
         </div>
         <div className="info-tab__link-item">
           <a
-            href="https://metamask.io/privacy.html"
+            href="https://megtron.io/privacy.html"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -43,7 +43,7 @@ export default class InfoTab extends PureComponent {
         </div>
         <div className="info-tab__link-item">
           <a
-            href="https://metamask.io/terms.html"
+            href="https://megtron.io/terms.html"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -52,48 +52,26 @@ export default class InfoTab extends PureComponent {
             </span>
           </a>
         </div>
-        <div className="info-tab__link-item">
-          <a
-            href="https://metamask.io/attributions.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <span className="info-tab__link-text">
-              { t('attributions') }
-            </span>
-          </a>
-        </div>
         <hr className="info-tab__separator" />
         <div className="info-tab__link-item">
           <a
-            href="https://support.metamask.io"
+            href="https://discord.gg/GsRgsTD"
             target="_blank"
             rel="noopener noreferrer"
           >
             <span className="info-tab__link-text">
-              { t('supportCenter') }
+              { t('discordForum') }
             </span>
           </a>
         </div>
         <div className="info-tab__link-item">
           <a
-            href="https://metamask.io/"
+            href="https://megtron.io/"
             target="_blank"
             rel="noopener noreferrer"
           >
             <span className="info-tab__link-text">
               { t('visitWebSite') }
-            </span>
-          </a>
-        </div>
-        <div className="info-tab__link-item">
-          <a
-            href="mailto:help@metamask.io?subject=Feedback"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <span className="info-tab__link-text">
-              { t('emailUs') }
             </span>
           </a>
         </div>

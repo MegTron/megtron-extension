@@ -397,16 +397,16 @@ export default class SettingsTab extends PureComponent {
     return (
       <div className="settings-page__content">
         { warning && <div className="settings-tab__error">{ warning }</div> }
-        { this.renderCurrentConversion() }
+        { false && this.renderCurrentConversion() }
         { this.renderUseEthAsPrimaryCurrency() }
         { this.renderCurrentLocale() }
         { this.renderNewRpcUrl() }
         { this.renderStateLogs() }
         { this.renderSeedWords() }
-        { !isMascara && this.renderOldUI() }
+        { false && !isMascara && this.renderOldUI() }
         { this.renderResetAccount() }
         { this.renderBlockieOptIn() }
-        { this.renderHexDataOptIn() }
+        { false && this.renderHexDataOptIn() }
       </div>
     )
   }

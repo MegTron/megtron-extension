@@ -105,7 +105,7 @@
     "message": "Your Browser is not supported..."
   },
   "builtInCalifornia": {
-    "message": "MegTron is designed and built in California."
+    "message": "MegTron is forked from MetaMask, and built in California."
   },
   "buy": {
     "message": "Buy"
@@ -324,6 +324,9 @@
   },
   "directDepositEtherExplainer": {
     "message": "If you already have some TRX, the quickest way to get TRX in your new wallet by direct deposit."
+  },
+  "discordForum": {
+    "message": "Discord Forum"
   },
   "done": {
     "message": "Done"
