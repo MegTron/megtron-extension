@@ -615,7 +615,7 @@
     "message": "Loading Tokens..."
   },
   "localhost": {
-    "message": "Localhost 8545"
+    "message": "Localhost 50051"
   },
   "login": {
     "message": "Log In"

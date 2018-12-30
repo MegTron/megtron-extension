@@ -5,11 +5,11 @@ const MAINNET = 'mainnet'
 const SHASTA = 'shasta'
 const LOCALHOST = 'localhost'
 
-const MAINNET_CODE = 1
+const MAINNET_CODE = 11111
 const ROPSTEN_CODE = 3
 const RINKEYBY_CODE = 4
 const KOVAN_CODE = 42
-const SHASTA_CODE = 5
+const SHASTA_CODE = 1
 
 const ROPSTEN_DISPLAY_NAME = 'Ropsten'
 const RINKEBY_DISPLAY_NAME = 'Rinkeby'

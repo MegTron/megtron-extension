@@ -17,7 +17,8 @@ const RETRIABLE_ERRORS = [
 module.exports = createTrongridMiddleware
 module.exports.fetchConfigFromReq = fetchConfigFromReq
 
-function createTrongridMiddleware ({ network = 'mainnet', maxAttempts = 5 }) {
+function createTrongridMiddleware ({ network = 'mainnet', rpcTarget, maxAttempts = 5 }) {
+  const networkInfo = { network, rpcTarget }
   // validate options
   if (!maxAttempts) throw new Error(`Invalid value for 'maxAttempts': "${maxAttempts}" (${typeof maxAttempts})`)
 
@@ -26,7 +27,7 @@ function createTrongridMiddleware ({ network = 'mainnet', maxAttempts = 5 }) {
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
         // attempt request
-        await performFetch(network, req, res)
+        await performFetch(networkInfo, req, res)
         // request was succesful
         break
       } catch (err) {
@@ -62,8 +63,8 @@ function isRetriableError (err) {
   return RETRIABLE_ERRORS.some(phrase => errMessage.includes(phrase))
 }
 
-async function performFetch (network, req, res) {
-  const { fetchUrl, fetchParams } = fetchConfigFromReq({ network, req })
+async function performFetch (networkInfo, req, res) {
+  const { fetchUrl, fetchParams } = fetchConfigFromReq({ networkInfo, req })
   const response = await fetch(fetchUrl, fetchParams)
   const rawData = await response.text()
   // handle errors
@@ -98,7 +99,8 @@ async function performFetch (network, req, res) {
   res.error = data.Error
 }
 
-function fetchConfigFromReq ({ network, req }) {
+function fetchConfigFromReq ({ networkInfo, req }) {
+  const { network, rpcTarget } = networkInfo
   const { method, params } = req
   let body = JSON.stringify(params)
   // A hack to make it work. Ideally, params should be object instead of array
@@ -107,7 +109,17 @@ function fetchConfigFromReq ({ network, req }) {
   }
 
   const fetchParams = {}
-  let fetchUrl = network === 'mainnet' ? `https://api.trongrid.io` : `https://api.${network}.trongrid.io`
+  let fetchUrl = rpcTarget
+  if (!fetchUrl) {
+    if (network === 'mainnet') {
+      fetchUrl = `https://api.trongrid.io`
+    } else if (network === 'localhost') {
+      fetchUrl = `https://localhost:50051`
+    } else {
+      fetchUrl = `https://api.${network}.trongrid.io`
+    }
+  }
+  
   const isPostMethod = !GET_METHODS.includes(method)
   if (isPostMethod) {
     fetchParams.method = 'POST'

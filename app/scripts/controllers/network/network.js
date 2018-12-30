@@ -6,18 +6,16 @@ const JsonRpcEngine = require('json-rpc-engine')
 const providerFromEngine = require('eth-json-rpc-middleware/providerFromEngine')
 const log = require('loglevel')
 const createMetamaskMiddleware = require('./createMetamaskMiddleware')
-const createJsonRpcClient = require('./createJsonRpcClient')
-const createLocalhostClient = require('./createLocalhostClient')
 const createTrongridClient = require('./createTrongridClient')
 const { createSwappableProxy, createEventEmitterProxy } = require('swappable-obj-proxy')
-const { getNetworkCode } = require('./util')
+const TronQuery = require('../../lib/tron-query')
 
 const {
   MAINNET,
   SHASTA,
   LOCALHOST,
 } = require('./enums')
-const TRONGRID_PROVIDER_TYPES = [MAINNET, SHASTA]
+const TRONGRID_PROVIDER_TYPES = [MAINNET, SHASTA, LOCALHOST]
 
 const env = process.env.METAMASK_ENV
 const METAMASK_DEBUG = process.env.METAMASK_DEBUG
@@ -83,8 +81,13 @@ module.exports = class NetworkController extends EventEmitter {
     if (!this._provider) {
       return log.warn('NetworkController - lookupNetwork aborted due to missing provider')
     }
-    const { type } = this.getProviderConfig()
-    this.setNetworkState(getNetworkCode(type).toString())
+    const tronQuery = new TronQuery(this._provider)
+    tronQuery.sendAsync({ method: 'wallet/getnodeinfo' }, (err, nodeInfo) => {
+      if (err) return this.setNetworkState('loading')
+      const p2pVersion = nodeInfo.configNodeInfo.p2pVersion
+      log.info('wallet.getnodeinfo returned ' + p2pVersion)
+      this.setNetworkState(p2pVersion)
+    })
   }
 
   setRpcTarget (rpcTarget) {
@@ -96,7 +99,6 @@ module.exports = class NetworkController extends EventEmitter {
   }
 
   async setProviderType (type) {
-    console.log('MegTron.network.setProviderType', { type })
     assert.notEqual(type, 'rpc', `NetworkController - cannot call "setProviderType" with type 'rpc'. use "setRpcTarget"`)
     assert(TRONGRID_PROVIDER_TYPES.includes(type) || type === LOCALHOST, `NetworkController - Unknown rpc type "${type}"`)
     const providerConfig = { type }
@@ -127,37 +129,12 @@ module.exports = class NetworkController extends EventEmitter {
   }
 
   _configureProvider (opts) {
-    const { type, rpcTarget } = opts
-    // trongrid type-based endpoints
-    const isTrongrid = TRONGRID_PROVIDER_TYPES.includes(type)
-    if (isTrongrid) {
-      this._configureTrongridProvider(opts)
-    // other type-based rpc endpoints
-    } else if (type === LOCALHOST) {
-      this._configureLocalhostProvider()
-    // url-based rpc endpoints
-    } else if (type === 'rpc') {
-      this._configureStandardProvider({ rpcUrl: rpcTarget })
-    } else {
-      throw new Error(`NetworkController - _configureProvider - unknown type "${type}"`)
-    }
+    this._configureTrongridProvider(opts)
   }
 
-  _configureTrongridProvider ({ type }) {
+  _configureTrongridProvider ({ type, rpcTarget }) {
     log.info('NetworkController - configureTrongridProvider', type)
-    const networkClient = createTrongridClient({ network: type })
-    this._setNetworkClient(networkClient)
-  }
-
-  _configureLocalhostProvider () {
-    log.info('NetworkController - configureLocalhostProvider')
-    const networkClient = createLocalhostClient()
-    this._setNetworkClient(networkClient)
-  }
-
-  _configureStandardProvider ({ rpcUrl }) {
-    log.info('NetworkController - configureStandardProvider', rpcUrl)
-    const networkClient = createJsonRpcClient({ rpcUrl })
+    const networkClient = createTrongridClient({ network: type, rpcTarget })
     this._setNetworkClient(networkClient)
   }
 

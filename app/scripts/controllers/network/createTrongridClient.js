@@ -5,8 +5,8 @@ const BlockTracker = require('./tronPollingBlockTracker')
 
 module.exports = createTrongridClient
 
-function createTrongridClient ({ network }) {
-  const trongridMiddleware = createTronMiddleware({ network })
+function createTrongridClient ({ network, rpcTarget }) {
+  const trongridMiddleware = createTronMiddleware({ network, rpcTarget })
   const trongridProvider = providerFromMiddleware(trongridMiddleware)
   const blockTracker = new BlockTracker({ provider: trongridProvider })
 

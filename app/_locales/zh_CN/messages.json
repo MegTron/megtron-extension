@@ -472,7 +472,7 @@
     "message": "加载代币中..."
   },
   "localhost": {
-    "message": "Localhost 8545"
+    "message": "Localhost 50051"
   },
   "login": {
     "message": "登录"
