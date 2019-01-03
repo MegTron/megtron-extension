@@ -25,7 +25,7 @@ TronQuery.prototype.getTransactionSign = generateFnFor('wallet/gettransactionsig
 TronQuery.prototype.sendAsync = function (opts, cb) {
   const self = this
   self.currentProvider.sendAsync(createPayload(opts), function (err, response) {
-    if (!err && response.Error) err = new Error('TronQuery - RPC Error - ' + response.Error)
+    if (!err && response.result && response.result.Error) err = new Error('TronQuery - RPC Error - ' + response.result.Error)
     if (err) return cb(err)
     cb(null, response.result)
   })
