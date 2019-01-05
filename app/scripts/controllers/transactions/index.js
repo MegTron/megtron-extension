@@ -299,8 +299,6 @@ class TransactionController extends EventEmitter {
       this.txStateManager.updateTx(txMeta, 'transactions#approveTransaction')
       // sign transaction
       console.log('MegTron.transaction.index.approveTransactions', 'before sign')
-      console.log('MegTron.transaction.index.approveTransactions', 'before sign')
-      console.log('MegTron.transaction.index.approveTransactions', 'before sign')
       const rawTx = await this.signTx(txId)
       console.log('MegTron.transaction.index.approveTransactions', 'before publish')
       await this.publishTransaction(txId, rawTx)
@@ -351,6 +349,9 @@ class TransactionController extends EventEmitter {
     this.setTxPublishStatus(txId, txHash)
     this.setTxHash(txId, txHash)
     this.txStateManager.setTxStatusSubmitted(txId)
+    if (txHash.code) {
+      throw new Error(txHash.code)
+    }
   }
 
   /**
