@@ -2,8 +2,7 @@ import { connect } from 'react-redux'
 import {
   addToAddressBook,
   clearSend,
-  signTokenTx,
-  signTx,
+  createTransaction,
   updateTransaction,
 } from '../../../actions'
 import SendFooter from './send-footer.component'
@@ -29,8 +28,6 @@ import {
   constructUpdatedTx,
 } from './send-footer.utils'
 
-import { getHexAddress } from '../../../helpers/transactions.util'
-
 export default connect(mapStateToProps, mapDispatchToProps)(SendFooter)
 
 function mapStateToProps (state) {
@@ -54,27 +51,7 @@ function mapStateToProps (state) {
 function mapDispatchToProps (dispatch) {
   return {
     clearSend: () => dispatch(clearSend()),
-    sign: async ({ selectedToken, to, amount, from }) => {
-      let txParams
-      const ownerAddress = getHexAddress(from)
-      const toAddress = getHexAddress(to)
-      if (selectedToken) {
-        const assetName = new Buffer(selectedToken.symbol).toString('hex')
-        txParams = await global.tronQuery.transferAsset({
-          amount: parseInt(amount, 16),
-          owner_address: ownerAddress,
-          to_address: toAddress,
-          asset_name: assetName,
-        })
-      } else {
-        txParams = await global.tronQuery.createTransaction({
-          amount: parseInt(amount, 16),
-          owner_address: ownerAddress,
-          to_address: toAddress,
-        })
-      }
-      dispatch(signTx(txParams))
-    },
+    createTransaction: async data => dispatch(createTransaction(data)),
     update: ({
       amount,
       data,

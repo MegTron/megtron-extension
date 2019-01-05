@@ -404,6 +404,7 @@ module.exports = class MetamaskController extends EventEmitter {
       exportAccount: nodeify(keyringController.exportAccount, keyringController),
 
       // txController
+      createTransaction: nodeify(txController.newUnapprovedTransaction, txController),
       cancelTransaction: nodeify(txController.cancelTransaction, txController),
       updateTransaction: nodeify(txController.updateTransaction, txController),
       updateAndApproveTransaction: nodeify(txController.updateAndApproveTransaction, txController),

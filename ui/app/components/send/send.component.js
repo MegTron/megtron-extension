@@ -193,6 +193,16 @@ export default class SendTransactionScreen extends PersistentForm {
     this.props.resetSendState()
   }
 
+  renderError () {
+    const { sendError } = this.props
+    if (!sendError) {
+      return null
+    }
+    return (<div className="send-v2__error">
+      {sendError}
+    </div>)
+  }
+
   render () {
     const { history, showHexData } = this.props
 
@@ -204,6 +214,7 @@ export default class SendTransactionScreen extends PersistentForm {
           scanQrCode={_ => this.props.scanQrCode()}
           showHexData={showHexData}
         />
+        { this.renderError() }
         <SendFooter history={history}/>
       </div>
     )

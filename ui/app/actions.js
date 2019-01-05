@@ -164,6 +164,7 @@ var actions = {
   cancelTypedMsg,
   sendTx: sendTx,
   signTx: signTx,
+  createTransaction: createTransaction,
   signTokenTx: signTokenTx,
   updateTransaction,
   updateAndApproveTx,
@@ -189,7 +190,7 @@ var actions = {
   UPDATE_SEND_TO: 'UPDATE_SEND_TO',
   UPDATE_SEND_AMOUNT: 'UPDATE_SEND_AMOUNT',
   UPDATE_SEND_MEMO: 'UPDATE_SEND_MEMO',
-  UPDATE_SEND_ERRORS: 'UPDATE_SEND_ERRORS',
+  UPDATE_SEND_ERRORS: 'metamask/send/UPDATE_SEND_ERRORS',
   UPDATE_MAX_MODE: 'UPDATE_MAX_MODE',
   UPDATE_SEND: 'UPDATE_SEND',
   CLEAR_SEND: 'CLEAR_SEND',
@@ -896,6 +897,43 @@ function signTx (txData) {
     }).catch((err) => {
       console.log('MegTron.actions.signTx', { err })
       dispatch(actions.displayWarning(err.message))
+    })
+  }
+}
+
+// Cretae TRX or Token transaction
+function createTransaction (data) {
+  return async (dispatch, getState) => {
+    const { selectedToken, to, amount, from } = data
+    const ownerAddress = getHexAddress(from)
+    const toAddress = getHexAddress(to)
+    let promise
+    if (selectedToken) {
+      const assetName = new Buffer(selectedToken.symbol).toString('hex')
+      promise = global.tronQuery.transferAsset({
+        amount: parseInt(amount, 16),
+        owner_address: ownerAddress,
+        to_address: toAddress,
+        asset_name: assetName,
+      })
+    } else {
+      promise = global.tronQuery.createTransaction({
+        amount: parseInt(amount, 16),
+        owner_address: ownerAddress,
+        to_address: toAddress,
+      })
+    }
+    return new Promise((resolve, reject) => {
+      promise.then(txParams => {
+        console.log('MegTron.actions.createTransaction', {txParams})
+        dispatch(actions.updateSendErrors({ general: null }))
+        background.createTransaction(txParams, {origin: 'MegTron'})
+        dispatch(actions.showConfTxPage({}))
+        resolve()
+      }).catch(err => {
+        dispatch(actions.updateSendErrors({ general: err.message }))
+        reject()
+      })
     })
   }
 }
