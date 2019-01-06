@@ -85,7 +85,7 @@ export default class TransactionViewBalance extends PureComponent {
         <div className="transaction-view-balance__balance-container">
           <Identicon
             diameter={50}
-            address={selectedToken && selectedToken.address}
+            address={selectedToken && selectedToken.id}
             network={network}
             image={assetImage}
           />

@@ -225,7 +225,6 @@ module.exports = class MetamaskController extends EventEmitter {
 
     this.memStore = new ComposableObservableStore(null, {
       NetworkController: this.networkController.store,
-      AccountTracker: this.accountTracker.store,
       TxController: this.txController.memStore,
       BalancesController: this.balancesController.store,
       TokenRatesController: this.tokenRatesController.store,
@@ -240,6 +239,7 @@ module.exports = class MetamaskController extends EventEmitter {
       NoticeController: this.noticeController.memStore,
       ShapeshiftController: this.shapeshiftController.store,
       TrongridController: this.trongridController.store,
+      AccountTracker: this.accountTracker.store,
     })
     this.memStore.subscribe(this.sendUpdate.bind(this))
   }

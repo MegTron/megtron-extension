@@ -17,6 +17,7 @@ TronQuery.prototype.createTransaction = generateFnFor('wallet/createtransaction'
 TronQuery.prototype.transferAsset = generateFnFor('wallet/transferasset')
 TronQuery.prototype.broadcastTransaction = generateFnFor('wallet/broadcasttransaction')
 TronQuery.prototype.assetIssueByName = generateFnFor('wallet/getassetissuebyname')
+TronQuery.prototype.getAssetIssueByID = generateFnFor('wallet/getassetissuebyid')
 TronQuery.prototype.getNodeInfo = generateFnFor('wallet/getnodeinfo')
 TronQuery.prototype.getTransactionInfoByID = generateFnFor('wallet/gettransactioninfobyid')
 TronQuery.prototype.getTransactionSign = generateFnFor('wallet/gettransactionsign')

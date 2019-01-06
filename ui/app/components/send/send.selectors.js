@@ -6,6 +6,7 @@ const {
 const {
   estimateGasPriceFromRecentBlocks,
 } = require('./send.utils')
+const { getSelectedToken } = require('../../selectors')
 
 const selectors = {
   accountsWithSendEtherInfoSelector,
@@ -167,15 +168,6 @@ function getSelectedIdentity (state) {
   const identities = state.metamask.identities
 
   return identities[selectedAddress]
-}
-
-function getSelectedToken (state) {
-  // This is actually the token name, eg. "MegTron"
-  const name = state.metamask.selectedTokenAddress
-  if (!name) {
-    return null
-  }
-  return { address: name, decimals: '0', symbol: name}
 }
 
 function getSelectedTokenContract (state) {

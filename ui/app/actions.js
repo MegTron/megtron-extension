@@ -904,18 +904,31 @@ function signTx (txData) {
 // Cretae TRX or Token transaction
 function createTransaction (data) {
   return async (dispatch, getState) => {
+    const useAssetID = true
     const { selectedToken, to, amount, from } = data
     const ownerAddress = getHexAddress(from)
     const toAddress = getHexAddress(to)
     let promise
     if (selectedToken) {
-      const assetName = new Buffer(selectedToken.symbol).toString('hex')
-      promise = global.tronQuery.transferAsset({
-        amount: parseInt(amount, 16),
-        owner_address: ownerAddress,
-        to_address: toAddress,
-        asset_name: assetName,
-      })
+      if (useAssetID) {
+        const assetID = selectedToken.id
+        promise = global.tronQuery.transferAsset({
+          amount: parseInt(amount, 16),
+          owner_address: ownerAddress,
+          to_address: toAddress,
+          asset_id: assetID,
+          // TODO(MegTron): Seems trongrid is having trouble update from name to id. This is rediculous, and need to be addressed when server is updated.
+          asset_name: new Buffer(assetID).toString('hex'),
+        })
+      } else {
+        const assetName = selectedToken.name
+        promise = global.tronQuery.transferAsset({
+          amount: parseInt(amount, 16),
+          owner_address: ownerAddress,
+          to_address: toAddress,
+          asset_name: assetName,
+        })
+      }
     } else {
       promise = global.tronQuery.createTransaction({
         amount: parseInt(amount, 16),
@@ -925,12 +938,13 @@ function createTransaction (data) {
     }
     return new Promise((resolve, reject) => {
       promise.then(txParams => {
-        console.log('MegTron.actions.createTransaction', {txParams})
+        console.log('MegTron.actions.createTransaction', { txParams })
         dispatch(actions.updateSendErrors({ general: null }))
         background.createTransaction(txParams, {origin: 'MegTron'})
         dispatch(actions.showConfTxPage({}))
         resolve()
       }).catch(err => {
+        console.log('MegTron.actions.createTransaction', { err })
         dispatch(actions.updateSendErrors({ general: err.message }))
         reject()
       })

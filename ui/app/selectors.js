@@ -59,12 +59,15 @@ function getSelectedAccount (state) {
 }
 
 function getSelectedToken (state) {
-  // This is actually the token name, eg. "MegTron"
-  const name = state.metamask.selectedTokenAddress
-  if (!name) {
+  const assetID = state.metamask.selectedTokenAddress
+  const tokens = state.metamask.tokens
+  const ret = tokens.find(t => t.id === assetID)
+  if (!ret) {
     return null
   }
-  return { address: name, decimals: '0', symbol: name}
+  // backward compatiple
+  ret.decimals = '0'
+  return ret
 }
 
 function getSelectedTokenExchangeRate (state) {

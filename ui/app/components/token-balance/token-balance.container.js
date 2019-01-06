@@ -9,16 +9,16 @@ const mapStateToProps = state => {
   }
 }
 
-const getTokenBalance = ( assets, symbol ) => {
+const getTokenBalance = ( assets, id) => {
   if (!assets) return 0
-  const asset = assets.find(token => token.key === symbol)
+  const asset = assets.find(token => token.key === id)
   if (!asset) return 0
   return asset.value || 0
 }
 
 const mergeProps = (stateProps, dispatchProps, ownProps) => {
-  const { selectedToken: { symbol }, selectedAccount: { asset } } = stateProps
-  const string = getTokenBalance(asset, symbol).toString()
+  const { selectedToken: { id, symbol}, selectedAccount: { asset } } = stateProps
+  const string = getTokenBalance(asset, id).toString()
   return {
     ...stateProps,
     ...dispatchProps,

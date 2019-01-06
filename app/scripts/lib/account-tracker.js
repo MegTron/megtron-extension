@@ -7,6 +7,7 @@
  * on each new block.
  */
 
+const extend = require('xtend')
 const TronQuery = require('./tron-query')
 const ObservableStore = require('obs-store')
 const log = require('loglevel')
@@ -28,6 +29,7 @@ class AccountTracker {
    * @property {Object} store The stored object containing all accounts to track, as well as the current block's gas limit.
    * @property {Object} store.accounts The accounts currently stored in this AccountTracker
    * @property {string} store.currentBlockGasLimit A hex string indicating the gas limit of the current block
+   * @property {Object} store.tokens The tokens the curent accounts have
    * @property {Object} _provider A provider needed to create the TronQuery instance used within this AccountTracker.
    * @property {TronQuery} _query An TronQuery instance used to access account information from the blockchain
    * @property {BlockTracker} _blockTracker A BlockTracker instance. Needed to ensure that accounts and their info updates
@@ -39,6 +41,7 @@ class AccountTracker {
     const initState = {
       accounts: {},
       currentBlockGasLimit: '',
+      tokens: [],
     }
     this.store = new ObservableStore(initState)
 
@@ -53,6 +56,7 @@ class AccountTracker {
     // bind function for easier listener syntax
     this._updateForBlock = this._updateForBlock.bind(this)
     this._assetAddressMap = {}
+    this._assetInfoMap = {}
   }
 
   start () {
@@ -164,6 +168,7 @@ class AccountTracker {
    *
    */
   async _updateAccounts () {
+    this._assetInfoMap = {}
     const accounts = this.store.getState().accounts
     const addresses = Object.keys(accounts)
     await Promise.all(addresses.map(this._updateAccount.bind(this)))
@@ -176,6 +181,20 @@ class AccountTracker {
       this._assetAddressMap[assetKey] = getBase58Address(assetInfoResult.owner_address)
     }
     return this._assetAddressMap[assetKey]
+  }
+
+  async _getAssetInfo (assetID) {
+    if (!this._assetInfoMap[assetID]) {
+      const assetInfo = await this._query.getAssetIssueByID({ value: assetID })
+      if (assetInfo.name) {
+        assetInfo.symbol = new Buffer(assetInfo.name, 'hex').toString()
+      }
+      if (assetInfo.owner_address) {
+        assetInfo.address = getBase58Address(assetInfo.owner_address)
+      }
+      this._assetInfoMap[assetID] = assetInfo
+    }
+    return this._assetInfoMap[assetID]
   }
 
   /**
@@ -191,19 +210,23 @@ class AccountTracker {
     const balanceResult = await this._query.getBalance({ address: getHexAddress(address) })
     const balanceNum = balanceResult.balance || 0
     const balance = intToHex(balanceNum)
-    const asset = balanceResult.asset || []
+    const asset = (balanceResult.assetV2 || [])
     for (var i = 0; i < asset.length; i++) {
-      asset[i].address = await this._getAssetAddress(asset[i].key)
+      const info = await this._getAssetInfo(asset[i].key)
+      console.log('MegTron.account-tracker.updateAccount', { info })
+      asset[i] = extend(asset[i], info)
+      console.log('MegTron.account-tracker.updateAccount', asset[i])
     }
+    console.log('MegTron.account-tracker.updateAccount', 'done')
     const result = { address, balance, asset }
     // update accounts state
     const { accounts } = this.store.getState()
     // only populate if the entry is still present
     if (!accounts[address]) return
     accounts[address] = result
-    this.store.updateState({ accounts })
+    const tokens = Object.keys(this._assetInfoMap).map(k => this._assetInfoMap[k])
+    this.store.updateState({ accounts, tokens })
   }
-
 }
 
 module.exports = AccountTracker
