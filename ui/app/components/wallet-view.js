@@ -117,6 +117,16 @@ WalletView.prototype.renderAddToken = function () {
   })
 }
 
+WalletView.prototype.renderBandwidth = function () {
+  const { selectedAccount } = this.props
+  return h('div.flex-center', {
+    style: { marginTop: '10px' },
+   }, [
+    'Bandwidth: ',
+    selectedAccount.bandwidth,
+  ])
+}
+
 WalletView.prototype.render = function () {
   const {
     responsiveDisplayClassname,
@@ -213,6 +223,7 @@ WalletView.prototype.render = function () {
     ]),
 
     this.renderWalletBalance(),
+    this.renderBandwidth(),
 
     h(TokenList),
 

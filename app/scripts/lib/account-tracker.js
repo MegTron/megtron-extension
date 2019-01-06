@@ -210,6 +210,10 @@ class AccountTracker {
     const balanceResult = await this._query.getBalance({ address: getHexAddress(address) })
     const balanceNum = balanceResult.balance || 0
     const balance = intToHex(balanceNum)
+    // query bandwidth
+    const bandwidthResult = await this._query.getAccountNet({ address: getHexAddress(address) })
+    const bandwidth = bandwidthResult.freeNetLimit - bandwidthResult.freeNetUsed
+    // query assets
     const asset = (balanceResult.assetV2 || [])
     for (var i = 0; i < asset.length; i++) {
       const info = await this._getAssetInfo(asset[i].key)
@@ -218,7 +222,7 @@ class AccountTracker {
       console.log('MegTron.account-tracker.updateAccount', asset[i])
     }
     console.log('MegTron.account-tracker.updateAccount', 'done')
-    const result = { address, balance, asset }
+    const result = { address, balance, asset, bandwidth }
     // update accounts state
     const { accounts } = this.store.getState()
     // only populate if the entry is still present
