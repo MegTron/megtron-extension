@@ -368,26 +368,7 @@ class TransactionController extends EventEmitter {
     if (!txMeta) {
       return
     }
-
-    try {
-      const txReceipt = await this.query.getTransactionReceipt(txMeta.hash)
-
-      // It seems that sometimes the numerical values being returned from
-      // this.query.getTransactionReceipt are BN instances and not strings.
-      const gasUsed = typeof txReceipt.gasUsed !== 'string'
-        ? txReceipt.gasUsed.toString(16)
-        : txReceipt.gasUsed
-
-      txMeta.txReceipt = {
-        ...txReceipt,
-        gasUsed,
-      }
-
-      this.txStateManager.updateTx(txMeta, 'transactions#confirmTransaction - add txReceipt')
-    } catch (err) {
-      log.error(err)
-    }
-
+    this.txStateManager.updateTx(txMeta, 'transactions#confirmTransaction - add txReceipt')
     this.txStateManager.setTxStatusConfirmed(txId)
   }
 

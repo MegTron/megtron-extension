@@ -1,5 +1,5 @@
 const extension = require('extensionizer')
-const explorerLink = require('etherscan-link').createExplorerLink
+const getTxLink = require('../../../ui/lib/tx-link')
 
 class ExtensionPlatform {
 
@@ -60,20 +60,17 @@ class ExtensionPlatform {
   _showConfirmedTransaction (txMeta) {
 
     this._subscribeToNotificationClicked()
-
-    const url = explorerLink(txMeta.hash, parseInt(txMeta.metamaskNetworkId))
-    const nonce = parseInt(txMeta.txParams.nonce, 16)
-
+    const networkId = txMeta.metamaskNetworkId
+    const hash = txMeta.rawTx.txID
+    const url = getTxLink(hash, networkId)
     const title = 'Confirmed transaction'
-    const message = `Transaction ${nonce} confirmed! View on EtherScan`
+    const message = `Transaction confirmed! View on TronScan`
     this._showNotification(title, message, url)
   }
 
   _showFailedTransaction (txMeta) {
-
-    const nonce = parseInt(txMeta.txParams.nonce, 16)
     const title = 'Failed transaction'
-    const message = `Transaction ${nonce} failed! ${txMeta.err.message}`
+    const message = `Transaction failed! ${txMeta.err.message}`
     this._showNotification(title, message)
   }
 
@@ -95,7 +92,7 @@ class ExtensionPlatform {
   }
 
   _viewOnEtherScan (txId) {
-    if (txId.startsWith('http://')) {
+    if (txId.startsWith('https://')) {
       global.metamaskController.platform.openWindow({ url: txId })
     }
   }
