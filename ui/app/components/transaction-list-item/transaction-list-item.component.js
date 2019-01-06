@@ -92,12 +92,9 @@ export default class TransactionListItem extends PureComponent {
   }
 
   renderPrimaryCurrency () {
-    const { transaction: { txParams } = {} } = this.props
+    const { transaction: { txParams } = {}, token } = this.props
     const value = '0x' + getTxParamsAmount(txParams).toString(16)
     const amount = getTxParamsAmount(txParams)
-    const assetName = getTxParamsAssetName(txParams)
-    const symbol = assetName ? new Buffer(assetName, 'hex').toString() : null
-    const token = assetName ? { address: assetName, decimals: 0, symbol } : null
 
     return token
       ? (
@@ -140,6 +137,7 @@ export default class TransactionListItem extends PureComponent {
       nonceAndDate,
       showCancel,
       showRetry,
+      token,
       transaction,
     } = this.props
     const { txParams = {} } = transaction
@@ -193,6 +191,7 @@ export default class TransactionListItem extends PureComponent {
                   showRetry={false && showRetry && methodData.done}
                   onCancel={this.handleCancel}
                   showCancel={false && showCancel}
+                  token={token}
                 />
               </div>
             )

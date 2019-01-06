@@ -7,6 +7,7 @@ const unapprovedMsgsSelector = state => state.metamask.unapprovedMsgs
 const unapprovedPersonalMsgsSelector = state => state.metamask.unapprovedPersonalMsgs
 const unapprovedTypedMessagesSelector = state => state.metamask.unapprovedTypedMessages
 const networkSelector = state => state.metamask.network
+const tokensSelector = state => state.metamask.tokens
 
 export const unconfirmedTransactionsListSelector = createSelector(
   unapprovedTxsSelector,
@@ -108,14 +109,17 @@ export const tokenAddressSelector = createSelector(
 
 export const tokenAmountAndToAddressSelector = createSelector(
   txDataSelector,
-  txData => {
+  tokensSelector,
+  (txData, tokens) => {
     const { txParams } = txData
     const tokenAmount = getTxParamsAmount(txParams)
-    const tokenAddress = getTxParamsAssetName(txParams)
-    const tokenSymbol = tokenAddress ? new Buffer(tokenAddress, 'hex').toString() : undefined
+    const tokenIDHex = getTxParamsAssetName(txParams)
+    const tokenID = tokenIDHex ? new Buffer(tokenIDHex, 'hex').toString() : undefined
+    const tokenSymbol = tokenID ? tokens.find(t => t.id === tokenID).symbol : undefined
     const toAddress = getBase58Address(getTxParamsToAddress(txParams))
     return {
-      tokenAddress,
+      tokenAddress: tokenID,
+      tokenID,
       tokenAmount,
       tokenSymbol,
       toAddress,

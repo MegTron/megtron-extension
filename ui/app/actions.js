@@ -904,7 +904,7 @@ function signTx (txData) {
 // Cretae TRX or Token transaction
 function createTransaction (data) {
   return async (dispatch, getState) => {
-    const useAssetID = true
+    const useAssetID = false
     const { selectedToken, to, amount, from } = data
     const ownerAddress = getHexAddress(from)
     const toAddress = getHexAddress(to)
@@ -917,16 +917,14 @@ function createTransaction (data) {
           owner_address: ownerAddress,
           to_address: toAddress,
           asset_id: assetID,
-          // TODO(MegTron): Seems trongrid is having trouble update from name to id. This is rediculous, and need to be addressed when server is updated.
-          asset_name: new Buffer(assetID).toString('hex'),
         })
       } else {
-        const assetName = selectedToken.name
+        const assetID = new Buffer(selectedToken.id).toString('hex')
         promise = global.tronQuery.transferAsset({
           amount: parseInt(amount, 16),
           owner_address: ownerAddress,
           to_address: toAddress,
-          asset_name: assetName,
+          asset_name: assetID,
         })
       }
     } else {
@@ -2368,17 +2366,6 @@ function updateNetworkNonce (address) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       resolve(0)
-      // TODO(MegTron): remove?
-      /*
-      global.ethQuery.getTransactionCount(address, (err, data) => {
-        if (err) {
-          dispatch(actions.displayWarning(err.message))
-          return reject(err)
-        }
-        dispatch(setNetworkNonce(data))
-        resolve(data)
-      })
-      */
     })
   }
 }

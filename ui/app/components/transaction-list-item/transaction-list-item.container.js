@@ -4,20 +4,13 @@ import { compose } from 'recompose'
 import withMethodData from '../../higher-order-components/with-method-data'
 import TransactionListItem from './transaction-list-item.component'
 import { setSelectedToken, retryTransaction, showModal } from '../../actions'
-import { hexToDecimal } from '../../helpers/conversions.util'
-import { getTokenData } from '../../helpers/transactions.util'
-import { formatDate } from '../../util'
+import { getTokenInfo } from '../../selectors'
 
 const mapStateToProps = (state, ownProps) => {
-  const { transaction: { txParams: { value, nonce, data } = {}, time } = {} } = ownProps
-
-  const tokenData = data && getTokenData(data)
-  const nonceAndDate = nonce ? `#${hexToDecimal(nonce)} - ${formatDate(time)}` : formatDate(time)
-
+  const { transaction: { txParams } } = ownProps
+  const token = getTokenInfo(state, txParams)
   return {
-    value,
-    nonceAndDate,
-    tokenData,
+    token,
   }
 }
 

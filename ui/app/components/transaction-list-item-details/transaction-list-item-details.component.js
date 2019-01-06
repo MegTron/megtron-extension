@@ -19,6 +19,7 @@ export default class TransactionListItemDetails extends PureComponent {
     onRetry: PropTypes.func,
     showCancel: PropTypes.bool,
     showRetry: PropTypes.bool,
+    token: PropTypes.object,
     transaction: PropTypes.object,
   }
 
@@ -45,7 +46,7 @@ export default class TransactionListItemDetails extends PureComponent {
 
   render () {
     const { t } = this.context
-    const { transaction, showCancel, showRetry } = this.props
+    const { transaction, showCancel, showRetry, token } = this.props
     const { txParams } = transaction
     const to = getBase58Address(getTxParamsToAddress(txParams))
     const from = getBase58Address(getTxParamsFromAddress(txParams))
@@ -96,12 +97,16 @@ export default class TransactionListItemDetails extends PureComponent {
           />
         </div>
         <div className="transaction-list-item-details__cards-container">
-          <TransactionBreakdown
-            transaction={transaction}
-            className="transaction-list-item-details__transaction-breakdown"
-          />
+          {!token &&
+            <TransactionBreakdown
+              transaction={transaction}
+              token={token}
+              className="transaction-list-item-details__transaction-breakdown"
+            />
+          }
           <TransactionActivityLog
             transaction={transaction}
+            token={token}
             className="transaction-list-item-details__transaction-activity-log"
           />
         </div>

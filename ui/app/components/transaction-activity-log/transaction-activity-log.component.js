@@ -13,6 +13,7 @@ export default class TransactionActivityLog extends PureComponent {
   }
 
   static propTypes = {
+    token: PropTypes.object,
     transaction: PropTypes.object,
     className: PropTypes.string,
     conversionRate: PropTypes.number,
@@ -41,18 +42,22 @@ export default class TransactionActivityLog extends PureComponent {
   }
 
   renderActivity (activity, index) {
-    const { conversionRate } = this.props
+    const { conversionRate, token } = this.props
     const { eventKey, value, timestamp } = activity
     const ethValue = index === 0
-      ? `${getValueFromSunHex({
-        value,
-        toCurrency: TRX,
-        conversionRate,
-        numberOfDecimals: 6,
-      })} ${TRX}`
+      ? (
+        token ? `${parseInt(value, 16)} ${token.symbol}` :
+        `${getValueFromSunHex({
+          value,
+          toCurrency: TRX,
+          conversionRate,
+          numberOfDecimals: 6,
+        })} ${TRX}`
+      )
       : getValueFromSunHex({ value, toCurrency: TRX, conversionRate })
     const formattedTimestamp = formatDate(timestamp)
     const activityText = this.context.t(eventKey, [ethValue, formattedTimestamp])
+    console.log('zxxxxxx', { activity, index, activityText })
 
     return (
       <div

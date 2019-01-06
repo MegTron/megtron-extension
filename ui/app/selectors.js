@@ -8,6 +8,8 @@ const {
   multiplyCurrencies,
 } = require('./conversion-util')
 
+const { getTxParamsAssetName } = require('./helpers/transactions.util')
+
 const selectors = {
   getSelectedAddress,
   getSelectedIdentity,
@@ -29,6 +31,7 @@ const selectors = {
   getSendAmount,
   getSelectedTokenToFiatRate,
   getSelectedTokenContract,
+  getTokenInfo,
   autoAddToBetaUI,
   getSendMaxModeState,
   getCurrentViewContext,
@@ -66,6 +69,19 @@ function getSelectedToken (state) {
     return null
   }
   // backward compatiple
+  ret.decimals = '0'
+  return ret
+}
+
+function getTokenInfo (state, txParams) {
+  const tokens = state.metamask.tokens
+  const tokenIDHex = getTxParamsAssetName(txParams)
+  if (!tokenIDHex) return null
+  const tokenID = new Buffer(tokenIDHex, 'hex').toString()
+  const ret = tokens.find(t => t.id === tokenID)
+  if (!ret) {
+    return { address: tokenIDHex, decimals: '0', symbol: tokenID}
+  }
   ret.decimals = '0'
   return ret
 }
