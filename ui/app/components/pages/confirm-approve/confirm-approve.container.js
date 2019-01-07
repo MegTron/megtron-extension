@@ -1,9 +1,9 @@
 import { connect } from 'react-redux'
 import ConfirmApprove from './confirm-approve.component'
-import { approveTokenAmountAndToAddressSelector } from '../../../selectors/confirm-transaction'
+import { tokenAmountAndToAddressSelector } from '../../../selectors/confirm-transaction'
 
 const mapStateToProps = state => {
-  const { tokenAmount, tokenSymbol} = approveTokenAmountAndToAddressSelector(state)
+  const { tokenAmount, tokenSymbol} = tokenAmountAndToAddressSelector(state)
 
   if (tokenSymbol) {
     return {

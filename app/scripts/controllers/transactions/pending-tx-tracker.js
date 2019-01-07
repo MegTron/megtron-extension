@@ -29,10 +29,8 @@ class PendingTransactionTracker extends EventEmitter {
     checks the network for signed txs
   */
   async updatePendingTxs () {
-    console.log('MegTron.pending-tx-tracerk.updatePendingTxs')
     try {
       const pendingTxs = this.getPendingTransactions()
-      console.log('MegTron.pending-tx-tracerk.updatePendingTxs', { pendingTxs })
       await Promise.all(pendingTxs.map((txMeta) => this._checkPendingTx(txMeta)))
     } catch (err) {
       log.error('PendingTransactionTracker - Error updating pending transactions')
@@ -46,7 +44,6 @@ class PendingTransactionTracker extends EventEmitter {
     @emits tx:warning
   */
   resubmitPendingTxs (blockNumber) {
-    console.log('MegTron.pending-tx-tracker.resubmitPendingTxs', { blockNumber })
     const pending = this.getPendingTransactions()
     // only try resubmitting if their are transactions to resubmit
     if (!pending.length) return
@@ -90,7 +87,6 @@ class PendingTransactionTracker extends EventEmitter {
     @returns txHash {string}
   */
   async _resubmitTx (txMeta, latestBlockNumber) {
-    console.log('MegTron.pending-tx-tracker.resubmitTx', { txMeta, latestBlockNumber })
     if (!txMeta.firstRetryBlockNumber) {
       this.emit('tx:block-update', txMeta, latestBlockNumber)
     }
@@ -121,7 +117,6 @@ class PendingTransactionTracker extends EventEmitter {
     @emits tx:warning
   */
   async _checkPendingTx (txMeta) {
-    console.log('MegTron.pendingtxtracker.checkPendingTx', { txMeta })
     const txHash = txMeta.txParams.txID
     const txId = txMeta.id
 
@@ -142,7 +137,6 @@ class PendingTransactionTracker extends EventEmitter {
         this.emit('tx:confirmed', txId)
       }
     } catch (err) {
-      console.log('MegTron.pendingtxtracker.checkPendingTx', { err })
       txMeta.warning = {
         error: err.message,
         message: 'There was a problem loading this transaction.',

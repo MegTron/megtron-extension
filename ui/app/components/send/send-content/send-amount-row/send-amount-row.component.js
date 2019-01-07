@@ -104,8 +104,6 @@ export default class SendAmountRow extends Component {
 
   render () {
     const { gasTotal, inError } = this.props
-
-    // TODO(MegTron): enable Max button fafter gas model is updated.
     return (
       <SendRowWrapper
         label={`${this.context.t('amount')}:`}

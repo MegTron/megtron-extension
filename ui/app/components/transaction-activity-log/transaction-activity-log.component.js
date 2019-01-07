@@ -48,16 +48,15 @@ export default class TransactionActivityLog extends PureComponent {
       ? (
         token ? `${parseInt(value, 16)} ${token.symbol}` :
         `${getValueFromSunHex({
-          value,
-          toCurrency: TRX,
-          conversionRate,
-          numberOfDecimals: 6,
-        })} ${TRX}`
+        value,
+        toCurrency: TRX,
+        conversionRate,
+        numberOfDecimals: 6,
+      })} ${TRX}`
       )
       : getValueFromSunHex({ value, toCurrency: TRX, conversionRate })
     const formattedTimestamp = formatDate(timestamp)
     const activityText = this.context.t(eventKey, [ethValue, formattedTimestamp])
-    console.log('zxxxxxx', { activity, index, activityText })
 
     return (
       <div

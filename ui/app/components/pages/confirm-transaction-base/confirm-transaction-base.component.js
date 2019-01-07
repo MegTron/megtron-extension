@@ -334,7 +334,6 @@ export default class ConfirmTransactionBase extends Component {
   }
 
   render () {
-    console.log('zzz', this.props)
     const {
       isTxReprice,
       fromName,

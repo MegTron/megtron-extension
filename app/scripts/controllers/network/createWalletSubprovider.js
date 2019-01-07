@@ -15,7 +15,6 @@ function createWalletMiddleware (opts = {}) {
   })
 
   async function signTransaction (req, res) {
-    console.log('MegTron.createWalletSubprovider.signTransaction', { req, res })
     if (!processTransaction) throw new Error('WalletMiddleware - opts.processTransaction not provided')
     const txParams = req.params[0].transaction || {}
     const fromAddress = getBase58Address(getTxParamsFromAddress(txParams))

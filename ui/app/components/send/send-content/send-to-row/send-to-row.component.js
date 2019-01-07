@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import SendRowWrapper from '../send-row-wrapper/'
 import EnsInput from '../../../ens-input'
-import { getToErrorObject } from './send-to-row.utils.js'
 
 export default class SendToRow extends Component {
 
@@ -27,7 +26,6 @@ export default class SendToRow extends Component {
 
   handleToChange (to, nickname = '', toError) {
     const { updateSendTo, updateSendToError, updateGas } = this.props
-    // TODO(MegTron): check send to address issue
     const toErrorObject = { to: null }
     updateSendTo(to, nickname)
     updateSendToError(toErrorObject)

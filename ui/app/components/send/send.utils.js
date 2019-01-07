@@ -111,46 +111,6 @@ function getAmountErrorObject ({
   tokenBalance,
 }) {
   return { amount: null }
-  /* TODO(MegTron): update fee model
-  let insufficientFunds = false
-  if (gasTotal && conversionRate && !selectedToken) {
-    insufficientFunds = !isBalanceSufficient({
-      amount,
-      amountConversionRate,
-      balance,
-      conversionRate,
-      gasTotal,
-      primaryCurrency,
-    })
-  }
-
-  let inSufficientTokens = false
-  if (selectedToken && tokenBalance !== null) {
-    const { decimals } = selectedToken
-    inSufficientTokens = !isTokenBalanceSufficient({
-      tokenBalance,
-      amount,
-      decimals,
-    })
-  }
-
-  const amountLessThanZero = conversionGreaterThan(
-    { value: 0, fromNumericBase: 'dec' },
-    { value: amount, fromNumericBase: 'hex' },
-  )
-
-  let amountError = null
-
-  if (insufficientFunds) {
-    amountError = INSUFFICIENT_FUNDS_ERROR
-  } else if (inSufficientTokens) {
-    amountError = INSUFFICIENT_TOKENS_ERROR
-  } else if (amountLessThanZero) {
-    amountError = NEGATIVE_ETH_ERROR
-  }
-
-  return { amount: amountError }
-  */
 }
 
 function getGasFeeErrorObject ({

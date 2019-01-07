@@ -161,7 +161,6 @@ class TransactionStateManager extends EventEmitter {
     @param [note] {string} - a note about the update for history
   */
   updateTx (txMeta, note) {
-    console.log('MegTron.tx-state-manager.updateTx', { txMeta, note })
     // validate txParams
     if (txMeta.txParams) {
       if (typeof txMeta.txParams.data === 'undefined') {
@@ -205,7 +204,6 @@ class TransactionStateManager extends EventEmitter {
     @param txParams {object} - txParams to validate
   */
   validateTxParams (txParams) {
-    // TODO(MegTron): add code to verify
     return
   }
 

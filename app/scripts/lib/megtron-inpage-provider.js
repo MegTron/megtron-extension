@@ -68,14 +68,12 @@ function MegtronInpageProvider (connectionStream) {
 // handle sendAsync requests via asyncProvider
 // also remap ids inbound and outbound
 MegtronInpageProvider.prototype.sendAsync = function (payload, cb) {
-  console.log('MegTron.MegtronInpageProvider.sendAsync', { payload })
   const self = this
   self.rpcEngine.handle(payload, cb)
 }
 
 // TronWeb HttpProvider functions
 MegtronInpageProvider.prototype.request = function (url, payload, method) {
-  console.log('MegTron.MegtronInpageProvider.request', { url, payload, method })
   const self = this
   const sendAsyncPromise = util.promisify(self.sendAsync)
   return sendAsyncPromise({method: url, params: [payload]}).then(response => response.result)
@@ -86,7 +84,6 @@ MegtronInpageProvider.prototype.setStatusPage = function (statusPage = '/') {
 }
 
 MegtronInpageProvider.prototype.isConnected = function () {
-  // TODO(MegTron): handle setStatusPage and isConnected
   return true
 }
 

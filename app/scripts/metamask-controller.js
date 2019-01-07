@@ -43,7 +43,6 @@ const Mutex = require('await-semaphore').Mutex
 const version = require('../manifest.json').version
 const BN = require('ethereumjs-util').BN
 const GWEI_BN = new BN('1000000000')
-const percentile = require('percentile')
 const seedPhraseVerifier = require('./lib/seed-phrase-verifier')
 const log = require('loglevel')
 const TrezorKeyring = require('eth-trezor-keyring')
@@ -138,12 +137,12 @@ module.exports = class MetamaskController extends EventEmitter {
         this.accountTracker.stop()
       }
     })
-     
+
     // ensure accountTracker updates balances after network change
     this.networkController.on('networkDidChange', () => {
       this.accountTracker._updateAccounts()
     })
-      
+
     // key mgmt
     const additionalKeyrings = [TrezorKeyring, LedgerBridgeKeyring]
     this.keyringController = new KeyringController({
@@ -528,16 +527,12 @@ module.exports = class MetamaskController extends EventEmitter {
       if (cached && cached.balance) {
         resolve(cached.balance)
       } else {
-        // TODO(MegTron): remove comment
-        console.log('MegTron.metamask-controller.getBalance', {address})
         tronQuery.getBalance({ address: getHexAddress(address) }, (error, accountResponse) => {
           if (error) {
             reject(error)
             log.error(error)
           } else {
             const result = (accountResponse.balance || 0).toString()
-            // TODO(MegTron): remove comment
-            console.log('MegTron.metamask-controller.getBalance', { accountResponse, result })
             resolve(result)
           }
         })
@@ -854,7 +849,6 @@ module.exports = class MetamaskController extends EventEmitter {
    * @param {Object} req - (optional) the original request, containing the origin
    */
   async newUnapprovedTransaction (txParams, req) {
-    console.log('MegTron.metamask-controller.newUnapprovedTransaction', { txParams, req })
     return await this.txController.newUnapprovedTransaction(txParams, req)
   }
 
@@ -1128,21 +1122,9 @@ module.exports = class MetamaskController extends EventEmitter {
   }
 
   estimateGas (estimateGasParams) {
-    // TODO(MegTron):update
     return new Promise((resolve, reject) => {
       return resolve(0)
     })
-    /*
-    return new Promise((resolve, reject) => {
-      return this.txController.txGasUtil.query.estimateGas(estimateGasParams, (err, res) => {
-        if (err) {
-          return reject(err)
-        }
-
-        return resolve(res)
-      })
-    })
-    */
   }
 
 //=============================================================================
@@ -1374,32 +1356,6 @@ module.exports = class MetamaskController extends EventEmitter {
    */
   getGasPrice () {
     return '0x' + GWEI_BN.toString(16)
-    /* TODO(MegTron): Remove
-    const { recentBlocksController } = this
-    const { recentBlocks } = recentBlocksController.store.getState()
-
-    // Return 1 gwei if no blocks have been observed:
-    if (recentBlocks.length === 0) {
-      return '0x' + GWEI_BN.toString(16)
-    }
-
-    const lowestPrices = recentBlocks.map((block) => {
-      if (!block.gasPrices || block.gasPrices.length < 1) {
-        return GWEI_BN
-      }
-      return block.gasPrices
-      .map(hexPrefix => hexPrefix.substr(2))
-      .map(hex => new BN(hex, 16))
-      .sort((a, b) => {
-        return a.gt(b) ? 1 : -1
-      })[0]
-    })
-    .map(number => number.div(GWEI_BN).toNumber())
-
-    const percentileNum = percentile(65, lowestPrices)
-    const percentileNumBn = new BN(percentileNum)
-    return '0x' + percentileNumBn.mul(GWEI_BN).toString(16)
-    */
   }
 
   /**

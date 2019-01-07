@@ -26,7 +26,6 @@ export default class TransactionBreakdown extends PureComponent {
     const { transaction, className } = this.props
     const { txParams } = transaction
     const value = '0x' + getTxParamsAmount(txParams).toString(16)
-    // TODO(MegTron): add gas usage for smart contract
     const totalInHex = value
 
     return (

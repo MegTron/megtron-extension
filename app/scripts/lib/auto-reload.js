@@ -51,6 +51,5 @@ function setupDappAutoReload (tronWeb, observable) {
 
 // reload the page
 function triggerReset () {
-  console.log('MegTron.triggered reload')
   global.location.reload()
 }

@@ -1,13 +1,6 @@
-const abi = require('human-standard-token-abi')
 const pify = require('pify')
 const getBuyEthUrl = require('../../app/scripts/lib/buy-eth-url')
 const { getTokenAddressFromTokenObject } = require('./util')
-const {
-  calcGasTotal,
-  calcTokenBalance,
-  estimateGas,
-} = require('./components/send/send.utils')
-const ethUtil = require('ethereumjs-util')
 const { fetchLocale } = require('../i18n-helper')
 const log = require('loglevel')
 const { ENVIRONMENT_TYPE_NOTIFICATION } = require('../../app/scripts/lib/enums')
@@ -163,9 +156,7 @@ var actions = {
   signTypedMsg,
   cancelTypedMsg,
   sendTx: sendTx,
-  signTx: signTx,
   createTransaction: createTransaction,
-  signTokenTx: signTokenTx,
   updateTransaction,
   updateAndApproveTx,
   cancelTx: cancelTx,
@@ -887,20 +878,6 @@ function signTypedMsg (msgData) {
   }
 }
 
-function signTx (txData) {
-  console.log('MegTron.actions.signTx', { txData })
-  return (dispatch) => {
-    const transaction = {...txData}
-    global.tronQuery.getTransactionSign({ transaction }).then((data) => {
-      console.log('MegTron.actions.signTx', { data })
-      dispatch(actions.showConfTxPage)
-    }).catch((err) => {
-      console.log('MegTron.actions.signTx', { err })
-      dispatch(actions.displayWarning(err.message))
-    })
-  }
-}
-
 // Cretae TRX or Token transaction
 function createTransaction (data) {
   return async (dispatch, getState) => {
@@ -936,13 +913,11 @@ function createTransaction (data) {
     }
     return new Promise((resolve, reject) => {
       promise.then(txParams => {
-        console.log('MegTron.actions.createTransaction', { txParams })
         dispatch(actions.updateSendErrors({ general: null }))
         background.createTransaction(txParams, {origin: 'MegTron'})
         dispatch(actions.showConfTxPage({}))
         resolve()
       }).catch(err => {
-        console.log('MegTron.actions.createTransaction', { err })
         dispatch(actions.updateSendErrors({ general: err.message }))
         reject()
       })
@@ -1108,20 +1083,6 @@ function sendTx (txData) {
         return global.platform.closeCurrentWindow()
       }
     })
-  }
-}
-
-// TODO(MegTron): derecated
-function signTokenTx (tokenAddress, toAddress, amount, txData) {
-  return dispatch => {
-    dispatch(actions.showLoadingIndication())
-    const token = global.eth.contract(abi).at(tokenAddress)
-    token.transfer(toAddress, ethUtil.addHexPrefix(amount), txData)
-      .catch(err => {
-        dispatch(actions.hideLoadingIndication())
-        dispatch(actions.displayWarning(err.message))
-      })
-    dispatch(actions.showConfTxPage({}))
   }
 }
 
@@ -2353,13 +2314,6 @@ function updatePreferences (value) {
 
 function setUseETHAsPrimaryCurrencyPreference (value) {
   return setPreference('useETHAsPrimaryCurrency', value)
-}
-
-function setNetworkNonce (networkNonce) {
-  return {
-    type: actions.SET_NETWORK_NONCE,
-    value: networkNonce,
-  }
 }
 
 function updateNetworkNonce (address) {

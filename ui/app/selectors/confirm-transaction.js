@@ -127,12 +127,6 @@ export const tokenAmountAndToAddressSelector = createSelector(
   }
 )
 
-// TODO(MegTron): deprecated
-export const approveTokenAmountAndToAddressSelector = tokenAmountAndToAddressSelector
-
-// TODO(MegTron): deprecated
-export const sendTokenTokenAmountAndToAddressSelector = tokenAmountAndToAddressSelector
-
 export const contractExchangeRateSelector = createSelector(
   contractExchangeRatesSelector,
   tokenAddressSelector,

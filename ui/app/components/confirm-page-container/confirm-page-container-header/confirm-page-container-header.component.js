@@ -19,7 +19,6 @@ export default class ConfirmPageContainerHeader extends Component {
 
   renderTop () {
     const { onEdit } = this.props
-    // TODO(MegTron): Add feature to support editing.
     const showEdit = false
     const windowType = window.METAMASK_UI_TYPE
     const isFullScreen = windowType !== ENVIRONMENT_TYPE_NOTIFICATION &&

@@ -98,11 +98,10 @@ export default class TransactionListItemDetails extends PureComponent {
         </div>
         <div className="transaction-list-item-details__cards-container">
           {!token &&
-            <TransactionBreakdown
-              transaction={transaction}
-              token={token}
-              className="transaction-list-item-details__transaction-breakdown"
-            />
+          <TransactionBreakdown
+            transaction={transaction}
+            className="transaction-list-item-details__transaction-breakdown"
+          />
           }
           <TransactionActivityLog
             transaction={transaction}

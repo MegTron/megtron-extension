@@ -107,7 +107,6 @@ class RecentBlocksController {
    *
    */
   mapTransactionsToPrices (newBlock) {
-    // TODO(MegTron): gas price?
     const block = extend(newBlock, {
       gasPrices: (newBlock.transactions || []).map((tx) => {
         return 0 // tx.gasPrice

@@ -5,12 +5,7 @@ import {
 } from '../selectors/confirm-transaction'
 
 import {
-  getValueFromWeiHex,
   getValueFromSun,
-  getTransactionFee,
-  getHexGasTotal,
-  addFiat,
-  addEth,
   increaseLastGasPrice,
   hexGreaterThan,
 } from '../helpers/confirm-transaction/util'
@@ -20,7 +15,6 @@ import {
   getMethodData,
   getTxParamsAmount,
   isSmartContractAddress,
-  sumHexes,
 } from '../helpers/transactions.util'
 
 import { getSymbolAndDecimals } from '../token-util'
@@ -294,7 +288,6 @@ export function updateTxDataAndCalculate (txData) {
     const state = getState()
     const currentCurrency = currentCurrencySelector(state)
     const conversionRate = conversionRateSelector(state)
-    console.log('MegTron.confirm-transaction.updateTxDataAndCalculate', { txData, currentCurrency, conversionRate })
 
     dispatch(updateTxData(txData))
 
@@ -308,7 +301,6 @@ export function updateTxDataAndCalculate (txData) {
       value: amountDec, toCurrency: 'TRX', conversionRate, numberOfDecimals: 6,
     })
     const hexTransactionAmount = '0x' + amount.toString(16)
-    console.log('MegTron.confirm-transaction.updateTxDataAndCalculate', { fiatTransactionAmount, ethTransactionAmount, hexTransactionAmount ,amount }) 
 
     dispatch(updateTransactionAmounts({
       fiatTransactionAmount,

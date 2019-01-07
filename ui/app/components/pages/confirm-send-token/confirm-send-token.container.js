@@ -5,10 +5,10 @@ import ConfirmSendToken from './confirm-send-token.component'
 import { clearConfirmTransaction } from '../../../ducks/confirm-transaction.duck'
 import { setSelectedToken, updateSend, showSendTokenPage } from '../../../actions'
 import { conversionUtil } from '../../../conversion-util'
-import { sendTokenTokenAmountAndToAddressSelector } from '../../../selectors/confirm-transaction'
+import { tokenAmountAndToAddressSelector } from '../../../selectors/confirm-transaction'
 
 const mapStateToProps = state => {
-  const { tokenAmount } = sendTokenTokenAmountAndToAddressSelector(state)
+  const { tokenAmount } = tokenAmountAndToAddressSelector(state)
 
   return {
     tokenAmount,

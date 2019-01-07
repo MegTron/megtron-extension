@@ -116,7 +116,6 @@ const sign = function (transaction, privateKey = false, useTronHeader = true, ca
     return callback('Invalid transaction provided')
   }
 
-  // TODO(MegTron): how to check if user has unlocked
   proxiedInpageProvider.request('wallet/gettransactionsign', { transaction }, 'post'
   ).then(transaction => {
     callback(null, transaction)
@@ -126,7 +125,6 @@ const sign = function (transaction, privateKey = false, useTronHeader = true, ca
   })
 }
 tronWeb.trx.sign = (...args) => sign(...args)
-log.debug('MegTron - injected tronWeb')
 
 setupDappAutoReload(tronWeb, inpageProvider.publicConfigStore)
 
@@ -134,9 +132,7 @@ setupDappAutoReload(tronWeb, inpageProvider.publicConfigStore)
 inpageProvider.publicConfigStore.subscribe(function (state) {
   const currentAddress = tronWeb.defaultAddress.base58
   const newAddress = state.selectedAddress || false
-  // TODO(MegTron): what if user logged out?
   if (newAddress && newAddress !== currentAddress) {
-    console.log('MegTron.updateAddress', state.selectedAddress)
     originalSetAddress(state.selectedAddress)
   }
 })

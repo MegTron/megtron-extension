@@ -217,11 +217,8 @@ class AccountTracker {
     const asset = (balanceResult.assetV2 || [])
     for (var i = 0; i < asset.length; i++) {
       const info = await this._getAssetInfo(asset[i].key)
-      console.log('MegTron.account-tracker.updateAccount', { info })
       asset[i] = extend(asset[i], info)
-      console.log('MegTron.account-tracker.updateAccount', asset[i])
     }
-    console.log('MegTron.account-tracker.updateAccount', 'done')
     const result = { address, balance, asset, bandwidth }
     // update accounts state
     const { accounts } = this.store.getState()
