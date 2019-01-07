@@ -28,7 +28,7 @@ export default class UserPreferencedCurrencyDisplay extends PureComponent {
 
     return currency === TRX && showEthLogo && (
       <img
-        src="/images/icon-64.png"
+        src="/images/tron.svg"
         height={ethLogoHeight}
       />
     )
