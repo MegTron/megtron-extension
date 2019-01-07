@@ -50,9 +50,6 @@ function setupWeb3Connection (connectionStream) {
   providerStream.pipe(connectionStream).pipe(providerStream)
   connectionStream.on('error', console.error.bind(console))
   providerStream.on('error', console.error.bind(console))
-  // TODO(MegTron): remove
-  global.ethereumProvider = providerStream
-  global.ethQuery = new EthQuery(providerStream)
   global.tronQuery = pify(new TronQuery(providerStream))
   global.eth = new Eth(providerStream)
 }
