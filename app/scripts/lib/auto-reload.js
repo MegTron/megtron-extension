@@ -51,5 +51,6 @@ function setupDappAutoReload (tronWeb, observable) {
 
 // reload the page
 function triggerReset () {
-  global.location.reload()
+  // TODO(MegTron): user reports auto refresh does not work for some cases. Disable for now.
+  // global.location.reload()
 }
