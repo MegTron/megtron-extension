@@ -132,8 +132,13 @@ setupDappAutoReload(tronWeb, inpageProvider.publicConfigStore)
 inpageProvider.publicConfigStore.subscribe(function (state) {
   const currentAddress = tronWeb.defaultAddress.base58
   const newAddress = state.selectedAddress || false
-  if (newAddress && newAddress !== currentAddress) {
-    originalSetAddress(state.selectedAddress)
+  if (!newAddress) {
+    tronWeb.ready = false
+  } else {
+    tronWeb.ready = true
+    if (newAddress !== currentAddress) {
+      originalSetAddress(state.selectedAddress)
+    }
   }
 })
 
