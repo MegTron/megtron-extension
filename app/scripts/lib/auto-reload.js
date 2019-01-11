@@ -16,6 +16,7 @@ function setupDappAutoReload (tronWeb, observable) {
     set: (_tronWeb, key, value) => {
       // set value normally
       _tronWeb[key] = value
+      return true
     },
   })
 
