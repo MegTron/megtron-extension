@@ -9,6 +9,7 @@ import { PRIMARY, SECONDARY } from '../constants/common'
 const { getAssetImages, conversionRateSelector, getCurrentCurrency} = require('../selectors')
 
 const { formatBalance } = require('../util')
+const TRXMenuDropdown = require('./dropdowns/trx-menu-dropdown.js')
 
 module.exports = connect(mapStateToProps)(BalanceComponent)
 
@@ -30,11 +31,16 @@ function mapStateToProps (state) {
 inherits(BalanceComponent, Component)
 function BalanceComponent () {
   Component.call(this)
+
+  this.state = {
+    trxMenuOpen: false,
+  }
 }
 
 BalanceComponent.prototype.render = function () {
   const props = this.props
   const { token, network, assetImages } = props
+  const { trxMenuOpen } = this.state
   const address = token && token.address
   const image = assetImages && address ? assetImages[token.address] : undefined
 
@@ -51,8 +57,20 @@ BalanceComponent.prototype.render = function () {
       network,
       image,
     }),
+    h('div.wallet-balance__balance-ellipsis', null, [
+      token ? this.renderTokenBalance() : this.renderBalance(),
 
-    token ? this.renderTokenBalance() : this.renderBalance(),
+      h('i.fa.fa-ellipsis-h.fa-lg.wallet-balance__ellipsis.cursor-pointer', {
+        onClick: (e) => {
+          e.stopPropagation()
+          this.setState({ trxMenuOpen: true })
+        },
+      }),
+
+      trxMenuOpen && h(TRXMenuDropdown, {
+        onClose: () => this.setState({ trxMenuOpen: false }),
+      }),
+    ]),
   ])
 }
 
