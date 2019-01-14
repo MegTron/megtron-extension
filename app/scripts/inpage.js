@@ -78,6 +78,7 @@ tronWeb.isValidProvider = function (provider) {
 }
 tronWeb.setFullNode(proxiedInpageProvider)
 tronWeb.setSolidityNode(proxiedInpageProvider)
+tronWeb.setEventServer(proxiedInpageProvider)
 tronWeb.setFullNode = () => new Error('MegTron has disabled this feature')
 tronWeb.setSolidityNode = () => new Error('MegTron has disabled this feature')
 tronWeb.setEventServer = () => new Error('MegTron has disabled this feature')
@@ -85,6 +86,7 @@ tronWeb.setPrivateKey = () => new Error('MegTron has disabled this feature')
 tronWeb.setAddress = () => new Error('MegTron has disabled this feature')
 
 const sign = function (transaction, privateKey = false, useTronHeader = true, callback = false) {
+  console.log('MegTron.inpage.sign', { transaction, privateKey, useTronHeader, callback })
   if (tronWeb.utils.isFunction(privateKey)) {
       callback = privateKey
       privateKey = false
@@ -116,7 +118,8 @@ const sign = function (transaction, privateKey = false, useTronHeader = true, ca
     return callback('Invalid transaction provided')
   }
 
-  proxiedInpageProvider.request('wallet/gettransactionsign', { transaction }, 'post'
+  const params = typeof transaction === 'string' ? { message: transaction, useTronHeader } : { transaction }
+  proxiedInpageProvider.request('wallet/gettransactionsign', params, 'post'
   ).then(transaction => {
     callback(null, transaction)
   }).catch(err => {

@@ -268,6 +268,7 @@ module.exports = class MetamaskController extends EventEmitter {
       processTransaction: this.newUnapprovedTransaction.bind(this),
       getTransactionPublishStatus: this.getTransactionPublishStatus.bind(this),
       // msg signing
+      processSignMessage: this.newUnsignedMessage.bind(this),
       processEthSignMessage: this.newUnsignedMessage.bind(this),
       processPersonalMessage: this.newUnsignedPersonalMessage.bind(this),
       getPendingNonce: this.getPendingNonce.bind(this),
@@ -868,6 +869,8 @@ module.exports = class MetamaskController extends EventEmitter {
    * @param {Function} cb = The callback function called with the signature.
    */
   newUnsignedMessage (msgParams, req) {
+    const selectedAddress = this.preferencesController.getSelectedAddress()
+    msgParams.from = selectedAddress
     const promise = this.messageManager.addUnapprovedMessageAsync(msgParams, req)
     this.sendUpdate()
     this.opts.showUnconfirmedMessage()

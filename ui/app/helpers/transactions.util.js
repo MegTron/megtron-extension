@@ -5,16 +5,11 @@ import abiDecoder from 'abi-decoder'
 import TronWeb from 'tronweb'
 
 import {
-  TOKEN_METHOD_TRANSFER,
-  TOKEN_METHOD_APPROVE,
-  TOKEN_METHOD_TRANSFER_FROM,
   SEND_ETHER_ACTION_KEY,
   DEPLOY_CONTRACT_ACTION_KEY,
   APPROVE_ACTION_KEY,
   SEND_TOKEN_ACTION_KEY,
-  TRANSFER_FROM_ACTION_KEY,
   SIGNATURE_REQUEST_KEY,
-  UNKNOWN_FUNCTION_KEY,
   CANCEL_ATTEMPT_ACTION_KEY,
   CONTRACT_TYPE_SEND_TRX,
   CONTRACT_TYPE_SEND_TOKEN,
@@ -64,14 +59,27 @@ export function getHexAddress (address) {
   return TronWeb.address.toHex(address)
 }
 
+export function getTxParamsValue (txParams) {
+  if (!txParams || !txParams.raw_data || !txParams.raw_data.contract || !txParams.raw_data.contract[0] || !txParams.raw_data.contract[0].parameter) {
+    return null
+  }
+  return txParams.raw_data.contract[0].parameter.value
+}
+
 export function getTxParamsFromAddress (txParams) {
-  return txParams.owner_address || txParams.raw_data.contract[0].parameter.value.owner_address
+  const value = getTxParamsValue(txParams)
+  if (!value) {
+    return null
+  }
+  return value.owner_address
 }
 
 export function getTxParamsToAddress (txParams) {
-  return (txParams.to_address ||
-     txParams.raw_data.contract[0].parameter.value.to_address ||
-     txParams.raw_data.contract[0].parameter.value.contract_address)
+  const value = getTxParamsValue(txParams)
+  if (!value) {
+    return null
+  }
+  return value.to_address || value.contract_address
 }
 
 export function getTxParamsContractType (txParams) {
@@ -79,11 +87,19 @@ export function getTxParamsContractType (txParams) {
 }
 
 export function getTxParamsAmount (txParams) {
-  return txParams.amount || txParams.raw_data.contract[0].parameter.value.amount || txParams.raw_data.contract[0].parameter.value.call_value || 0
+  const value = getTxParamsValue(txParams)
+  if (!value) {
+    return 0
+  }
+  return value.amount || value.call_value || 0
 }
 
 export function getTxParamsAssetName (txParams) {
-  return txParams.raw_data.contract[0].parameter.value.asset_name
+  const value = getTxParamsValue(txParams)
+  if (!value) {
+    return null
+  }
+  return value.asset_name
 }
 
 /**

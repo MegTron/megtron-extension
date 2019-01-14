@@ -113,7 +113,7 @@ SignatureRequest.prototype.renderBalance = function () {
   const balanceInEther = conversionUtil(balance, {
     fromNumericBase: 'hex',
     toNumericBase: 'dec',
-    fromDenomination: 'WEI',
+    fromDenomination: 'SUN',
     numberOfDecimals: 6,
     conversionRate,
   })
@@ -122,7 +122,7 @@ SignatureRequest.prototype.renderBalance = function () {
 
     h('div.request-signature__balance-text', `${this.context.t('balance')}:`),
 
-    h('div.request-signature__balance-value', `${balanceInEther} ETH`),
+    h('div.request-signature__balance-value', `${balanceInEther} TRX`),
 
   ])
 }
@@ -200,14 +200,7 @@ SignatureRequest.prototype.renderBody = function () {
     rows = data
   } else if (type === 'eth_sign') {
     rows = [{ name: this.context.t('message'), value: data }]
-    notice = [this.context.t('signNotice'),
-      h('span.request-signature__help-link', {
-        onClick: () => {
-          global.platform.openWindow({
-            url: 'https://metamask.zendesk.com/hc/en-us/articles/360015488751',
-          })
-        },
-    }, this.context.t('learnMore'))]
+    notice = [this.context.t('signNotice')]
   }
 
   return h('div.request-signature__body', {}, [
