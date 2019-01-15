@@ -1176,8 +1176,8 @@ module.exports = class MetamaskController extends EventEmitter {
     // setup multiplexing
     const mux = setupMultiplex(connectionStream)
     // connect features
-    this.setupProviderConnection(mux.createStream('provider'), originDomain)
-    this.setupPublicConfig(mux.createStream('publicConfig'))
+    this.setupProviderConnection(mux.createStream('megtron_provider'), originDomain)
+    this.setupPublicConfig(mux.createStream('megtron_publicConfig'))
   }
 
   /**
@@ -1194,8 +1194,8 @@ module.exports = class MetamaskController extends EventEmitter {
     // setup multiplexing
     const mux = setupMultiplex(connectionStream)
     // connect features
-    this.setupControllerConnection(mux.createStream('controller'))
-    this.setupProviderConnection(mux.createStream('provider'), originDomain)
+    this.setupControllerConnection(mux.createStream('megtron_controller'))
+    this.setupProviderConnection(mux.createStream('megtron_provider'), originDomain)
   }
 
   /**
@@ -1209,7 +1209,7 @@ module.exports = class MetamaskController extends EventEmitter {
    */
   sendPhishingWarning (connectionStream, hostname) {
     const mux = setupMultiplex(connectionStream)
-    const phishingStream = mux.createStream('phishing')
+    const phishingStream = mux.createStream('megtron_phishing')
     phishingStream.write({ hostname })
   }
 

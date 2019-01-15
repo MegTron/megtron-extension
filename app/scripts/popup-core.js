@@ -2,7 +2,6 @@ const EventEmitter = require('events').EventEmitter
 const async = require('async')
 const Dnode = require('dnode')
 const Eth = require('ethjs')
-const EthQuery = require('eth-query')
 const TronQuery = require('./lib/tron-query')
 const launchMetamaskUi = require('../../ui')
 const StreamProvider = require('web3-stream-provider')
@@ -36,8 +35,8 @@ function connectToAccountManager (connectionStream, cb) {
   // setup multiplexing
   var mx = setupMultiplex(connectionStream)
   // connect features
-  setupControllerConnection(mx.createStream('controller'), cb)
-  setupWeb3Connection(mx.createStream('provider'))
+  setupControllerConnection(mx.createStream('megtron_controller'), cb)
+  setupWeb3Connection(mx.createStream('megtron_provider'))
 }
 
 /**

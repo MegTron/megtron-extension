@@ -38,10 +38,10 @@ const dbController = new DbController({
 start().catch(log.error)
 
 async function start () {
-  log.debug('MetaMask initializing...')
+  log.debug('MegTron initializing...')
   const initState = await loadStateFromPersistence()
   await setupController(initState)
-  log.debug('MetaMask initialization complete.')
+  log.debug('MegTron initialization complete.')
 }
 
 //
@@ -82,7 +82,7 @@ async function setupController (initState, client) {
     try {
       const versionedData = await versionifyData(state)
       await dbController.put(versionedData)
-    } catch (e) { console.error('METAMASK Error:', e) }
+    } catch (e) { console.error('MEGTRON Error:', e) }
   })
 
   async function versionifyData (state) {
@@ -106,7 +106,7 @@ async function setupController (initState, client) {
     var isMetaMaskInternalProcess = (context === 'popup')
     if (isMetaMaskInternalProcess) {
       // communication with popup
-      controller.setupTrustedCommunication(connectionStream, 'MetaMask')
+      controller.setupTrustedCommunication(connectionStream, 'MegTron')
       global.metamaskPopupIsOpen = true
     } else {
       // communication with page
@@ -118,8 +118,8 @@ async function setupController (initState, client) {
     // setup multiplexing
     var mx = setupMultiplex(connectionStream)
     // connect features
-    controller.setupProviderConnection(mx.createStream('provider'), originDomain)
-    controller.setupPublicConfig(mx.createStream('publicConfig'))
+    controller.setupProviderConnection(mx.createStream('megtron_provider'), originDomain)
+    controller.setupPublicConfig(mx.createStream('megtron_publicConfig'))
   }
 }
 // // this will be useful later but commented out for linting for now (liiiinting)

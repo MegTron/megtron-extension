@@ -33,19 +33,19 @@ function MegtronInpageProvider (connectionStream) {
   self.publicConfigStore = new LocalStorageStore({ storageKey: 'MegTron-Config' })
 
   pump(
-    mux.createStream('publicConfig'),
+    mux.createStream('megtron_publicConfig'),
     asStream(self.publicConfigStore),
     logStreamDisconnectWarning.bind(this, 'MegTron PublicConfigStore')
   )
 
   // ignore phishing warning message (handled elsewhere)
-  mux.ignoreStream('phishing')
+  mux.ignoreStream('megtron_phishing')
 
   // connect to async provider
   const jsonRpcConnection = createJsonRpcStream()
   pump(
     jsonRpcConnection.stream,
-    mux.createStream('provider'),
+    mux.createStream('megtron_provider'),
     jsonRpcConnection.stream,
     logStreamDisconnectWarning.bind(this, 'MegTron RpcProvider')
   )

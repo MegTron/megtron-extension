@@ -16,8 +16,8 @@ log.setDefaultLevel(process.env.METAMASK_DEBUG ? 'debug' : 'warn')
 
 // setup background connection
 var megtronStream = new LocalMessageDuplexStream({
-  name: 'inpage',
-  target: 'contentscript',
+  name: 'megtron_inpage',
+  target: 'megtron_contentscript',
 })
 
 // compose the inpage provider
@@ -86,7 +86,6 @@ tronWeb.setPrivateKey = () => new Error('MegTron has disabled this feature')
 tronWeb.setAddress = () => new Error('MegTron has disabled this feature')
 
 const sign = function (transaction, privateKey = false, useTronHeader = true, callback = false) {
-  console.log('MegTron.inpage.sign', { transaction, privateKey, useTronHeader, callback })
   if (tronWeb.utils.isFunction(privateKey)) {
       callback = privateKey
       privateKey = false

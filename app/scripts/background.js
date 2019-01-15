@@ -359,7 +359,7 @@ function setupController (initState, initLangCode) {
       const portStream = new PortStream(remotePort)
       // communication with popup
       controller.isClientOpen = true
-      controller.setupTrustedCommunication(portStream, 'MetaMask')
+      controller.setupTrustedCommunication(portStream, 'MegTron')
 
       if (processName === ENVIRONMENT_TYPE_POPUP) {
         popupIsOpen = true
